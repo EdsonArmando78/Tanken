@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/services_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/services_loading"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/open"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/service_open" />
+  </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

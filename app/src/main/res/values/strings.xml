@@ -1,30 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">Tanken</string>
     <string name="app_icon_description">Icono de Tanken</string>
-    <string name="about_title">Tanken!</string>
-    <string name="about_copyright">Tanken 2026 © Todos los derechos reservados.</string>
     <string name="open_schedule">Mis horarios académicos</string>
     <string name="open_about">Acerca de Tanken</string>
-    <string name="open_settings">Ver los ajustes</string>
-    <string name="open_tutorial">Ver el tutorial</string>
-    <string name="open_greeting">¡Salúdame, Tanken!</string>
-    <string name="open_calculator">¡Calculemos, Tanken!</string>
-    <string name="greeting_name_hint">¿Cuál es tu nombre, usuario?</string>
-    <string name="greeting_message">¡Hola, %1$s!</string>
-    <string name="settings_first_hint">Un ajuste</string>
-    <string name="settings_second_hint">Otro ajuste</string>
-    <string name="settings_switch_label">Un interruptor</string>
-    <string name="tutorial_description">Este podría ser un tutorial de cómo usar la app</string>
-    <string name="calculator_first_hint">Ingresa el primer valor</string>
-    <string name="calculator_second_hint">Ingresa el segundo valor</string>
-    <string name="calculator_add">Sumar</string>
-    <string name="calculator_subtract">Restar</string>
-    <string name="calculator_multiply">Multiplicar</string>
-    <string name="calculator_divide">Dividir</string>
-    <string name="calculator_calculate">Calcular</string>
-    <string name="calculator_result_label">Resultado:</string>
-    <string name="calculator_unavailable">N/A</string>
-    <string name="calculator_undefined">Indeterminado</string>
     <string name="schedule_title">Horarios académicos · Semanales</string>
     <string name="schedule_add">Agregar clase</string>
     <string name="schedule_empty">No hay horarios registrados. Agrega tu primera clase.</string>

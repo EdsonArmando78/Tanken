@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/timers_title"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:navigationContentDescription="@string/back" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timers_help"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/timerNameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/timer_name_hint">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/timerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textCapSentences"
+        android:singleLine="true"
+        android:importantForAutofill="no" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/timerSecondsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/timer_duration_label">
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/timerSeconds"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:singleLine="true"
+        android:importantForAutofill="no"
+        android:text="@string/timer_default_duration" />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/nextClass"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_next_class" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/start"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_start" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/notifications"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_notifications_disabled"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/permission"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_enable_notifications" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_empty"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/timers"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/clear"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/timer_clear_history" />
+  </LinearLayout>
+</androidx.core.widget.NestedScrollView>

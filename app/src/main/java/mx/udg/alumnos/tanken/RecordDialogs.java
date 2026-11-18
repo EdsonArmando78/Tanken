@@ -10,11 +10,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 final class RecordDialogs {
     private RecordDialogs() {}
 
-    static void observe(AppCompatActivity activity, RecordsViewModel model) {
+    static void observe(androidx.fragment.app.Fragment fragment, RecordsViewModel model) {
+        android.app.Activity activity = fragment.requireActivity();
         AlertDialog[] active = {null};
         model.detail()
                 .observe(
-                        activity,
+                        fragment.getViewLifecycleOwner(),
                         detail -> {
                             if (detail == null) return;
                             MaterialAlertDialogBuilder builder =
@@ -63,7 +64,8 @@ final class RecordDialogs {
                                     });
                             active[0].show();
                         });
-        activity.getLifecycle()
+        fragment.getViewLifecycleOwner()
+                .getLifecycle()
                 .addObserver(
                         new DefaultLifecycleObserver() {
                             @Override

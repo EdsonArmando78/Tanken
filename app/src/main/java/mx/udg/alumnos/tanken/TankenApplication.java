@@ -16,6 +16,7 @@ public final class TankenApplication extends Application {
         DynamicColors.applyToActivitiesIfAvailable(this);
         store = new AppStore(this);
         motion = new MotionSource(this);
+        store.io.execute(motion::reloadPreferences);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(motion);
         ProcessLifecycleOwner.get()
                 .getLifecycle()

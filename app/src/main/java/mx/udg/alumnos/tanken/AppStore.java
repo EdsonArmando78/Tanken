@@ -30,6 +30,9 @@ public final class AppStore {
     private volatile boolean ready;
     private final TankenDatabase db;
     private final ReminderCoordinator reminders;
+    private final CatalogRepository catalog;
+    private volatile long dataGeneration;
+    private final MutableLiveData<Boolean> notificationAsked = new MutableLiveData<>(false);
     private WellnessPreferences currentPreferences;
     private final Context context;
 
@@ -37,13 +40,17 @@ public final class AppStore {
         this.context = context;
         db =
                 Room.databaseBuilder(context, TankenDatabase.class, "tanken.db")
-                        .addMigrations(TankenDatabase.MIGRATION_1_2)
+                        .addMigrations(TankenDatabase.MIGRATION_1_2, TankenDatabase.MIGRATION_2_3)
                         .openHelperFactory(new PreservingOpenHelperFactory())
                         .build();
         reminders = new ReminderCoordinator(context, db);
+        catalog = new CatalogRepository(context, db, io);
         io.execute(
                 () -> {
                     try {
+                        String generation = db.records().metadata("dataGeneration");
+                        dataGeneration = generation == null ? 0 : Long.parseLong(generation);
+                        if ("1".equals(db.records().metadata("resetPending"))) performReset();
                         String warning = LegacyScheduleImport.run(db, context);
                         if (warning != null) error.postValue(warning);
                         try {
@@ -65,12 +72,21 @@ public final class AppStore {
                         } catch (RuntimeException failure) {
                             report(failure);
                         }
+                        notificationAsked.postValue(
+                                context.getSharedPreferences(
+                                                        "wellness_preferences",
+                                                        Context.MODE_PRIVATE)
+                                                .getBoolean("notificationAsked", false)
+                                        || context.getSharedPreferences(
+                                                        "TimersActivity", Context.MODE_PRIVATE)
+                                                .getBoolean("notificationAsked", false));
+                        catalog.initialize();
                         prune();
                         refresh();
                         if (currentPreferences != null)
                             reminders.reconcile(currentPreferences, snapshot, false);
-                    } catch (RuntimeException failure) {
-                        report(failure);
+                    } catch (java.io.IOException | RuntimeException failure) {
+                        report(new IllegalStateException(failure));
                     }
                 });
     }
@@ -226,11 +242,12 @@ public final class AppStore {
                 });
     }
 
-    public void saveMotion(TankenDatabase.MotionRow row) {
+    public void saveMotion(TankenDatabase.MotionRow row, long generation) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
+                        if (generation != dataGeneration) return;
                         String cutoff = db.records().metadata("historyClearedAt");
                         if (cutoff != null && row.startedAt < Long.parseLong(cutoff)) return;
                         db.records().putMotion(row);
@@ -245,11 +262,13 @@ public final class AppStore {
             String id,
             List<AcademicSchedule.Lesson> input,
             WellnessSimulation.Comparison result,
-            long executedAt) {
+            long executedAt,
+            long generation) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
+                        if (generation != dataGeneration) return;
                         String cutoff = db.records().metadata("historyClearedAt");
                         if (cutoff != null && executedAt < Long.parseLong(cutoff)) return;
                         TankenDatabase.ComparisonRow row = new TankenDatabase.ComparisonRow();
@@ -410,5 +429,103 @@ public final class AppStore {
                         main.post(() -> done.accept(context.getString(R.string.storage_failed)));
                     }
                 });
+    }
+
+    public CatalogRepository catalog() {
+        return catalog;
+    }
+
+    public long generation() {
+        return dataGeneration;
+    }
+
+    public LiveData<Boolean> notificationAsked() {
+        return notificationAsked;
+    }
+
+    public void markNotificationAsked() {
+        notificationAsked.setValue(true);
+        io.execute(
+                () -> {
+                    if (!context.getSharedPreferences("wellness_preferences", Context.MODE_PRIVATE)
+                            .edit()
+                            .putBoolean("notificationAsked", true)
+                            .commit())
+                        report(new IllegalStateException("Permission preference not saved"));
+                });
+    }
+
+    public void resetAll(java.util.function.Consumer<String> done) {
+        io.execute(
+                () -> {
+                    try {
+                        catalog
+                                .bundled(); // Validate the recovery catalog before changing
+                                            // anything.
+                        db.runInTransaction(
+                                () -> {
+                                    dataGeneration++;
+                                    db.records()
+                                            .putMetadata(
+                                                    new TankenDatabase.Metadata(
+                                                            "dataGeneration",
+                                                            Long.toString(dataGeneration)));
+                                    db.records()
+                                            .putMetadata(
+                                                    new TankenDatabase.Metadata(
+                                                            "resetPending", "1"));
+                                    db.records()
+                                            .putMetadata(
+                                                    new TankenDatabase.Metadata(
+                                                            "remindersDisabled", "1"));
+                                });
+                        reminders.cancelAlarm();
+                        androidx.core.app.NotificationManagerCompat.from(context).cancelAll();
+                        MotionSource motion =
+                                ((TankenApplication) context.getApplicationContext()).motion();
+                        motion.prepareReset(
+                                () ->
+                                        io.execute(
+                                                () -> {
+                                                    try {
+                                                        performReset();
+                                                        catalog.initialize();
+                                                        refresh();
+                                                        error.postValue("");
+                                                        motion.finishReset(
+                                                                () ->
+                                                                        main.post(
+                                                                                () ->
+                                                                                        done.accept(
+                                                                                                null)));
+                                                    } catch (java.io.IOException
+                                                            | RuntimeException failure) {
+                                                        report(new IllegalStateException(failure));
+                                                        main.post(
+                                                                () ->
+                                                                        done.accept(
+                                                                                context.getString(
+                                                                                        R.string
+                                                                                                .reset_failed)));
+                                                    }
+                                                }));
+                    } catch (java.io.IOException | RuntimeException failure) {
+                        report(new IllegalStateException(failure));
+                        main.post(() -> done.accept(context.getString(R.string.reset_failed)));
+                    }
+                });
+    }
+
+    private void performReset() throws java.io.IOException {
+        Catalog bundled = catalog.bundled();
+        reminders.cancelAlarm();
+        androidx.core.app.NotificationManagerCompat.from(context).cancelAll();
+        for (String file :
+                new String[] {"academic_schedule", "wellness_preferences", "TimersActivity"})
+            if (!context.getSharedPreferences(file, Context.MODE_PRIVATE).edit().clear().commit())
+                throw new IllegalStateException("Unable to clear preferences");
+        writePreferences(WellnessPreferences.defaults());
+        ResetData.clear(db, bundled, System.currentTimeMillis());
+        notificationAsked.postValue(false);
     }
 }

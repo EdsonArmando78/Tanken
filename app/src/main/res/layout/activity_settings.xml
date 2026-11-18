@@ -1,6 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" tools:context=".SettingsActivity">
-    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/settings_first_hint" android:importantForAutofill="no" android:inputType="text" />
-    <EditText android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="@string/settings_second_hint" android:importantForAutofill="no" android:inputType="text" />
-    <com.google.android.material.switchmaterial.SwitchMaterial android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/settings_switch_label" />
-</LinearLayout>
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/settings_title"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:navigationContentDescription="@string/back" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/privacy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_privacy"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/reading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/settings_reading" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/readingStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/motion_waiting"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/reminders"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reminders_title" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/notificationsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_notifications"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/notificationStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/publication_none"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/notifications"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notification_enable" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/reminderChannel"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_reminder_channel" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/timerChannel"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_timer_channel" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/dataTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_data"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/history"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/history_title" />
+        <com.google.android.material.button.MaterialButton
+        android:id="@+id/reset"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reset_title" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/storage_failed"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/help"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_title" />
+  </LinearLayout>
+</androidx.core.widget.NestedScrollView>

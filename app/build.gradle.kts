@@ -39,6 +39,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)
     androidTestImplementation(libs.room.testing)

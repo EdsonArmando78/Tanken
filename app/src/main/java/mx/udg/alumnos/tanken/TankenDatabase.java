@@ -14,9 +14,11 @@ import java.util.List;
             TankenDatabase.TransitionRow.class,
             TankenDatabase.MotionRow.class,
             TankenDatabase.ComparisonRow.class,
-            TankenDatabase.Metadata.class
+            TankenDatabase.Metadata.class,
+            TankenDatabase.ServiceRow.class,
+            TankenDatabase.CatalogInfo.class
         },
-        version = 2,
+        version = 3,
         exportSchema = true)
 public abstract class TankenDatabase extends RoomDatabase {
     public static final androidx.room.migration.Migration MIGRATION_1_2 =
@@ -44,6 +46,64 @@ public abstract class TankenDatabase extends RoomDatabase {
                                         + " INTEGER NOT NULL DEFAULT 0");
                 }
             };
+
+    public static final androidx.room.migration.Migration MIGRATION_2_3 =
+            new androidx.room.migration.Migration(2, 3) {
+                @Override
+                public void migrate(@NonNull androidx.sqlite.db.SupportSQLiteDatabase db) {
+                    db.execSQL(
+                            "CREATE TABLE IF NOT EXISTS services (id TEXT NOT NULL PRIMARY KEY,"
+                                + " name TEXT NOT NULL, location TEXT NOT NULL, phone TEXT NOT"
+                                + " NULL, extension TEXT NOT NULL, email TEXT NOT NULL, hours TEXT"
+                                + " NOT NULL, source TEXT NOT NULL, reviewedAt TEXT NOT NULL)");
+                    db.execSQL(
+                            "CREATE TABLE IF NOT EXISTS catalog_info (id INTEGER NOT NULL PRIMARY"
+                                + " KEY, version TEXT NOT NULL, imported INTEGER NOT NULL,"
+                                + " importedAt INTEGER NOT NULL)");
+                }
+            };
+
+    @Entity(tableName = "services")
+    public static class ServiceRow {
+        @PrimaryKey @NonNull public String id = "";
+        @NonNull
+        public String name = "",
+                location = "",
+                phone = "",
+                extension = "",
+                email = "",
+                hours = "",
+                source = "",
+                reviewedAt = "";
+
+        public ServiceRow() {}
+
+        @Ignore
+        public ServiceRow(Catalog.Service s) {
+            id = s.id;
+            name = s.name;
+            location = s.location;
+            phone = s.phone;
+            extension = s.extension;
+            email = s.email;
+            hours = s.hours;
+            source = s.source;
+            reviewedAt = s.reviewedAt;
+        }
+
+        public Catalog.Service service() {
+            return new Catalog.Service(
+                    id, name, location, phone, extension, email, hours, source, reviewedAt);
+        }
+    }
+
+    @Entity(tableName = "catalog_info")
+    public static class CatalogInfo {
+        @PrimaryKey public int id = 1;
+        @NonNull public String version = "";
+        public boolean imported;
+        public long importedAt;
+    }
 
     public abstract Records records();
 
@@ -150,14 +210,32 @@ public abstract class TankenDatabase extends RoomDatabase {
 
     @Dao
     public interface Records {
+        @Query("SELECT * FROM services ORDER BY name")
+        List<ServiceRow> services();
+
+        @Query("SELECT * FROM catalog_info WHERE id=1")
+        CatalogInfo catalogInfo();
+
+        @Insert
+        void putService(ServiceRow row);
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        void putCatalogInfo(CatalogInfo info);
+
+        @Query("DELETE FROM services")
+        void deleteServices();
+
+        @Query("DELETE FROM lessons")
+        void deleteAllLessons();
+
         @Query(
                 "SELECT * FROM notices WHERE state NOT IN ('COMPLETED','SKIPPED','CANCELLED') ORDER"
-                    + " BY nextAttempt, originalDue")
+                        + " BY nextAttempt, originalDue")
         List<NoticeRow> openNotices();
 
         @Query(
                 "SELECT * FROM notices WHERE state NOT IN ('COMPLETED','SKIPPED','CANCELLED') ORDER"
-                    + " BY originalDue")
+                        + " BY originalDue")
         LiveData<List<NoticeRow>> observeOpenNotices();
 
         @Query("SELECT * FROM notice_transitions WHERE noticeId = :id ORDER BY at")
@@ -180,7 +258,7 @@ public abstract class TankenDatabase extends RoomDatabase {
 
         @Query(
                 "DELETE FROM notices WHERE originalDue >= :from AND originalDue < :until AND state"
-                    + " IN ('COMPLETED','SKIPPED','CANCELLED')")
+                        + " IN ('COMPLETED','SKIPPED','CANCELLED')")
         void deleteClosedNotices(long from, long until);
 
         @Query("DELETE FROM motion_summaries WHERE endedAt >= :from AND endedAt < :until")

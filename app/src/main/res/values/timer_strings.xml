@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="timers_title">Temporizadores de clase</string>
     <string name="timers_help">Crea avisos para una clase, un descanso o una actividad. Hasta 4 activos; los demás esperan su turno. Al volver al reloj se cancelan. No son alarmas exactas con la app cerrada.</string>
@@ -9,7 +9,6 @@
     <string name="timer_start">Iniciar temporizador</string>
     <string name="timer_enable_notifications">Activar notificaciones</string>
     <string name="timer_clear_history">Limpiar finalizados y cancelados</string>
-    <string name="timer_back">Volver al reloj (cancela los temporizadores)</string>
     <string name="timer_notifications_enabled">Notificaciones activadas.</string>
     <string name="timer_notifications_disabled">Notificaciones desactivadas: verás el resultado en esta pantalla. Puedes activarlas con el botón.</string>
     <string name="timer_invalid_input">Escribe un nombre y una duración de 1 a 86400 segundos.</string>

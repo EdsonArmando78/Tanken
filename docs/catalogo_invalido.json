@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "version": "2026-11-18",
+  "services": [
+    {
+      "id": "medicina_general",
+      "name": "Medicina General",
+      "location": "Unidad de Salud Integral, módulo L, dentro del sub-almacén. CUCEI, Blvd. Marcelino García Barragán 1421, Guadalajara.",
+      "phone": "+523313785900",
+      "extension": "27603",
+      "email": "psocucei@cucei.udg.mx",
+      "hours": "Horario general publicado de la unidad: 8:00–20:00. Confirma la disponibilidad de cada área por contacto.",
+      "source": "https://www.cucei.udg.mx/servicios/medicos-y-clinicos",
+      "reviewedAt": "2026-11-18"
+    },
+    {
+      "id": "psicologia",
+      "name": "Psicología",
+      "location": "Unidad de Salud Integral, módulo L, dentro del sub-almacén. CUCEI, Blvd. Marcelino García Barragán 1421, Guadalajara.",
+      "phone": "+523313785900",
+      "extension": "27603",
+      "email": "psicopso-cucei@cucei.udg.mx",
+      "hours": "Horario general publicado de la unidad: 8:00–20:00. Confirma la disponibilidad de cada área por contacto.",
+      "source": "https://www.cucei.udg.mx/servicios/medicos-y-clinicos",
+      "reviewedAt": "2026-11-18"
+    },
+    {
+      "id": "nutricion",
+      "name": "Nutrición",
+      "location": "Unidad de Salud Integral, módulo L, dentro del sub-almacén. CUCEI, Blvd. Marcelino García Barragán 1421, Guadalajara.",
+      "phone": "+523313785900",
+      "extension": "27603",
+      "email": "nutripso-cucei@cucei.udg.mx",
+      "hours": "Horario general publicado de la unidad: 8:00–20:00. Confirma la disponibilidad de cada área por contacto.",
+      "source": "https://www.cucei.udg.mx/servicios/medicos-y-clinicos",
+      "reviewedAt": "2026-11-18"
+    },
+    {
+      "id": "medicina_general",
+      "name": "Medicina General",
+      "location": "Unidad de Salud Integral, módulo L, dentro del sub-almacén. CUCEI, Blvd. Marcelino García Barragán 1421, Guadalajara.",
+      "phone": "+523313785900",
+      "extension": "27603",
+      "email": "psocucei@cucei.udg.mx",
+      "hours": "Horario general publicado de la unidad: 8:00–20:00. Confirma la disponibilidad de cada área por contacto.",
+      "source": "https://www.cucei.udg.mx/servicios/medicos-y-clinicos",
+      "reviewedAt": "2026-11-18"
+    }
+  ]
+}

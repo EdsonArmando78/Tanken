@@ -56,6 +56,7 @@ public class WellnessViewModel extends AndroidViewModel {
         final boolean inactive;
         final ZonedDateTime start;
         final long executedAt = System.currentTimeMillis();
+        final long generation;
         final long started = SystemClock.elapsedRealtime();
         final AtomicBoolean cancelled = new AtomicBoolean();
 
@@ -63,8 +64,10 @@ public class WellnessViewModel extends AndroidViewModel {
                 int interval,
                 boolean inactive,
                 List<AcademicSchedule.Lesson> lessons,
-                ZonedDateTime start) {
+                ZonedDateTime start,
+                long generation) {
             this.start = start;
+            this.generation = generation;
             this.interval = interval;
             this.inactive = inactive;
             this.lessons = lessons;
@@ -133,7 +136,13 @@ public class WellnessViewModel extends AndroidViewModel {
             state.setValue(new State(Status.ERROR, 0, null, 0, ""));
             return;
         }
-        active = new Request(interval, inactive, store.snapshot(), ZonedDateTime.now().withNano(0));
+        active =
+                new Request(
+                        interval,
+                        inactive,
+                        store.snapshot(),
+                        ZonedDateTime.now().withNano(0),
+                        store.generation());
         state.setValue(new State(Status.RUNNING, 0, null, 0, ""));
         backgroundHandler.obtainMessage(RUN, active).sendToTarget();
     }
@@ -176,7 +185,13 @@ public class WellnessViewModel extends AndroidViewModel {
         if (closed || active != null) return;
         try {
             ComparisonCodec.Input input = ComparisonCodec.input(payload);
-            active = new Request(input.interval, input.inactive, input.lessons, input.start);
+            active =
+                    new Request(
+                            input.interval,
+                            input.inactive,
+                            input.lessons,
+                            input.start,
+                            AppStore.get(getApplication()).generation());
             state.setValue(new State(Status.RUNNING, 0, null, 0, ""));
             backgroundHandler.obtainMessage(RUN, active).sendToTarget();
         } catch (RuntimeException invalid) {
@@ -211,7 +226,8 @@ public class WellnessViewModel extends AndroidViewModel {
                             reply.request.id,
                             reply.request.lessons,
                             reply.comparison,
-                            reply.request.executedAt);
+                            reply.request.executedAt,
+                            reply.request.generation);
         if (status != Status.RUNNING) active = null;
         state.setValue(
                 new State(

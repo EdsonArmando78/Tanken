@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/help_title"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:navigationContentDescription="@string/back" />
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_start_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/body0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_start"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_reading_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/body1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_reading"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_notices_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/body2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_notices"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_catalog_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/body3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_catalog"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Tanken.Card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/title4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_data_title"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/body4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_data"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/help_android"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+  </LinearLayout>
+</androidx.core.widget.NestedScrollView>

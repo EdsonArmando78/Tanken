@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="20dp">
+  <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingEnd="16dp"
+        android:paddingStart="0dp">
+      <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/intro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/services_intro"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/services_loading"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/catalog_load_failed"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/catalog_imported"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/importCatalog"
+        style="@style/Tanken.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/catalog_import_title" />
+      <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/services_loading"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    </LinearLayout>
+  </androidx.core.widget.NestedScrollView>
+  <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/services"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.4"
+        android:clipToPadding="false" />
+</LinearLayout>

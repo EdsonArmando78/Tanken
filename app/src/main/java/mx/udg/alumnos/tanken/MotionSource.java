@@ -82,7 +82,8 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
     private final AppStore store;
     private final MotionAccumulator accumulator = new MotionAccumulator();
     private String sessionId = UUID.randomUUID().toString();
-    private boolean visible, enabled, listening;
+    private boolean visible, enabled, listening, resetting;
+    private long windowGeneration;
     private Availability availability = Availability.WAITING;
     private float x, y, z;
     private long at, received, lastPublished;
@@ -157,8 +158,49 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
                 });
     }
 
+    public void reloadPreferences() {
+        worker.post(
+                () -> {
+                    flush();
+                    try {
+                        enabled = preferences.getBoolean("motionEnabled", true);
+                    } catch (RuntimeException invalid) {
+                        enabled = false;
+                    }
+                    reconcile();
+                });
+    }
+
+    public void prepareReset(Runnable done) {
+        worker.post(
+                () -> {
+                    resetting = true;
+                    enabled = false;
+                    windowSamples = 0;
+                    windowObserved = 0;
+                    windowPeak = 0;
+                    accumulator.reset();
+                    at = 0;
+                    received = 0;
+                    reconcile();
+                    done.run();
+                });
+    }
+
+    public void finishReset(Runnable done) {
+        worker.post(
+                () -> {
+                    resetting = false;
+                    enabled = true;
+                    sessionId = UUID.randomUUID().toString();
+                    lastMovementElapsed = 0;
+                    reconcile();
+                    done.run();
+                });
+    }
+
     private void reconcile() {
-        boolean shouldListen = enabled && visible && sensor != null;
+        boolean shouldListen = !resetting && enabled && visible && sensor != null;
         if (!shouldListen) {
             if (listening) {
                 manager.unregisterListener(this);
@@ -215,7 +257,10 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
         at = now;
         received = SystemClock.elapsedRealtime();
         if (accumulator.movement >= 0.8) lastMovementElapsed = received;
-        if (windowSamples == 0) windowStarted = now;
+        if (windowSamples == 0) {
+            windowStarted = now;
+            windowGeneration = store.generation();
+        }
         windowSamples++;
         windowObserved += delta;
         windowPeak = Math.max(windowPeak, accumulator.movement);
@@ -244,7 +289,7 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
         row.samples = windowSamples;
         row.observedMillis = windowObserved / 1_000_000;
         row.peak = windowPeak;
-        store.saveMotion(row);
+        store.saveMotion(row, windowGeneration);
         windowSamples = 0;
         windowObserved = 0;
         windowPeak = 0;

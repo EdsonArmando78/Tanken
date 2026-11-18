@@ -21,13 +21,20 @@ import java.util.Map;
 /** All mutable state belongs to the main thread; each worker owns its CountDownTimer. */
 public class ClassTimersViewModel extends AndroidViewModel {
     static final int MAX_WORKERS = 4;
-    public enum Status { WAITING, RUNNING, FINISHED, CANCELLED }
+
+    public enum Status {
+        WAITING,
+        RUNNING,
+        FINISHED,
+        CANCELLED
+    }
 
     public static final class Row {
         public final int id;
         public final String name;
         public final long secondsLeft;
         public final Status status;
+
         Row(Entry entry) {
             id = entry.id;
             name = entry.name;
@@ -45,6 +52,7 @@ public class ClassTimersViewModel extends AndroidViewModel {
         int worker = -1;
         // Read/written only on the assigned worker's Looper.
         CountDownTimer timer;
+
         Entry(int id, String name, long seconds) {
             this.id = id;
             this.name = name;
@@ -61,19 +69,24 @@ public class ClassTimersViewModel extends AndroidViewModel {
     private final MutableLiveData<List<Row>> rows = new MutableLiveData<>(Collections.emptyList());
     private int nextId = 1;
     private boolean closed;
+    private final long generation;
 
     public ClassTimersViewModel(Application application) {
         super(application);
+        generation = AppStore.get(application).generation();
         TimerNotifications.createChannel(application);
     }
 
-    public LiveData<List<Row>> getRows() { return rows; }
+    public LiveData<List<Row>> getRows() {
+        return rows;
+    }
 
     @MainThread
     public void add(String name, long seconds) {
         if (closed) return;
         if (name == null || name.trim().isEmpty() || seconds < 1 || seconds > 86400) {
-            throw new IllegalArgumentException(getApplication().getString(R.string.timer_invalid_input));
+            throw new IllegalArgumentException(
+                    getApplication().getString(R.string.timer_invalid_input));
         }
         Entry entry = new Entry(nextId++, name.trim(), seconds);
         entries.put(entry.id, entry);
@@ -84,12 +97,17 @@ public class ClassTimersViewModel extends AndroidViewModel {
     @MainThread
     public void cancel(int id) {
         Entry entry = entries.get(id);
-        if (closed || entry == null || (entry.status != Status.RUNNING && entry.status != Status.WAITING)) return;
+        if (closed
+                || entry == null
+                || (entry.status != Status.RUNNING && entry.status != Status.WAITING)) return;
         boolean running = entry.status == Status.RUNNING;
         entry.status = Status.CANCELLED;
         if (running) {
             // FIFO: cancel the old counter before reusing this worker for another entry.
-            workers[entry.worker].post(() -> { if (entry.timer != null) entry.timer.cancel(); });
+            workers[entry.worker].post(
+                    () -> {
+                        if (entry.timer != null) entry.timer.cancel();
+                    });
             busy[entry.worker] = false;
         }
         dispatch();
@@ -117,23 +135,41 @@ public class ClassTimersViewModel extends AndroidViewModel {
                 workers[slot] = new Handler(threads[slot].getLooper());
             }
             final long deadline = SystemClock.elapsedRealtime() + entry.durationMillis;
-            workers[slot].post(() -> {
-                entry.timer = new CountDownTimer(Math.max(1, deadline - SystemClock.elapsedRealtime()), 1000) {
-                    @Override public void onTick(long remaining) {
-                        main.post(() -> {
-                            if (closed || entry.status != Status.RUNNING) return;
-                            entry.secondsLeft = (remaining + 999) / 1000;
-                            publish();
-                        });
-                    }
-                    @Override public void onFinish() { main.post(() -> finish(entry)); }
-                }.start();
-            });
+            workers[slot].post(
+                    () -> {
+                        entry.timer =
+                                new CountDownTimer(
+                                        Math.max(1, deadline - SystemClock.elapsedRealtime()),
+                                        1000) {
+                                    @Override
+                                    public void onTick(long remaining) {
+                                        main.post(
+                                                () -> {
+                                                    if (closed
+                                                            || generation
+                                                                    != AppStore.get(
+                                                                                    getApplication())
+                                                                            .generation()
+                                                            || entry.status != Status.RUNNING)
+                                                        return;
+                                                    entry.secondsLeft = (remaining + 999) / 1000;
+                                                    publish();
+                                                });
+                                    }
+
+                                    @Override
+                                    public void onFinish() {
+                                        main.post(() -> finish(entry));
+                                    }
+                                }.start();
+                    });
         }
     }
 
     private void finish(Entry entry) {
-        if (closed || entry.status != Status.RUNNING) return;
+        if (closed
+                || generation != AppStore.get(getApplication()).generation()
+                || entry.status != Status.RUNNING) return;
         entry.status = Status.FINISHED;
         entry.secondsLeft = 0;
         busy[entry.worker] = false;
@@ -148,12 +184,16 @@ public class ClassTimersViewModel extends AndroidViewModel {
         rows.setValue(Collections.unmodifiableList(snapshot));
     }
 
-    @Override protected void onCleared() {
+    @Override
+    protected void onCleared() {
         closed = true;
         main.removeCallbacksAndMessages(null);
         for (Entry entry : entries.values()) {
             if (entry.worker >= 0) {
-                workers[entry.worker].post(() -> { if (entry.timer != null) entry.timer.cancel(); });
+                workers[entry.worker].post(
+                        () -> {
+                            if (entry.timer != null) entry.timer.cancel();
+                        });
             }
         }
         for (HandlerThread thread : threads) {

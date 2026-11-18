@@ -57,7 +57,7 @@ public class StorageTest {
                 migration.createDatabase(databaseName, 1)) {
             old.execSQL(
                     "INSERT INTO lessons (id,name,day,start,end,updatedAt) VALUES"
-                        + " ('stable','Java',1,'08:00','09:00',100)");
+                            + " ('stable','Java',1,'08:00','09:00',100)");
             old.execSQL(
                     "INSERT INTO notices"
                         + " (id,kind,origin,state,reason,response,zone,createdAt,originalDue,nextAttempt,updatedAt)"
@@ -195,5 +195,98 @@ public class StorageTest {
         assertEquals(payload, db.records().comparisons().get(0).inputAndResults);
         db.records().pruneComparisons(2000);
         assertTrue(db.records().comparisons().isEmpty());
+    }
+
+    @Test
+    public void versionTwoMigrationPreservesNoticesAndAddsCatalog() throws Exception {
+        try (androidx.sqlite.db.SupportSQLiteDatabase old =
+                migration.createDatabase(databaseName, 2)) {
+            old.execSQL(
+                    "INSERT INTO lessons (id,name,day,start,end,updatedAt) VALUES"
+                        + " ('stable','Java',1,'08:00','09:00',100)");
+        }
+        try (androidx.sqlite.db.SupportSQLiteDatabase upgraded =
+                        migration.runMigrationsAndValidate(
+                                databaseName, 3, true, TankenDatabase.MIGRATION_2_3);
+                android.database.Cursor cursor = upgraded.query("SELECT id FROM lessons")) {
+            assertTrue(cursor.moveToFirst());
+            assertEquals("stable", cursor.getString(0));
+        }
+    }
+
+    private Catalog bundled() throws Exception {
+        try (java.io.InputStream stream = context.getAssets().open("services.json")) {
+            return CatalogCodec.read(stream);
+        }
+    }
+
+    @Test
+    public void catalogRejectsInvalidInputAndRollsBackFailedReplacement() throws Exception {
+        Catalog seed = bundled();
+        CatalogRepository.persist(db, seed, false, 0);
+        assertThrows(
+                java.io.IOException.class,
+                () ->
+                        CatalogCodec.read(
+                                new java.io.ByteArrayInputStream(
+                                        new byte[CatalogCodec.MAX_BYTES + 1])));
+        String raw;
+        try (java.io.InputStream stream = context.getAssets().open("services.json")) {
+            java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+            byte[] bytes = new byte[4096];
+            int n;
+            while ((n = stream.read(bytes)) != -1) out.write(bytes, 0, n);
+            raw = out.toString("UTF-8");
+        }
+        org.json.JSONObject json = new org.json.JSONObject(raw);
+        org.json.JSONArray items = json.getJSONArray("services");
+        items.put(items.getJSONObject(0));
+        assertThrows(IllegalArgumentException.class, () -> CatalogCodec.parse(json.toString()));
+        org.json.JSONObject unsafe = new org.json.JSONObject(raw);
+        unsafe.getJSONArray("services").getJSONObject(0).put("source", "javascript:alert(1)");
+        assertThrows(IllegalArgumentException.class, () -> CatalogCodec.parse(unsafe.toString()));
+        Catalog duplicate =
+                new Catalog(
+                        "broken",
+                        Arrays.asList(seed.services.get(0), seed.services.get(0)),
+                        true,
+                        1);
+        assertThrows(
+                RuntimeException.class, () -> CatalogRepository.persist(db, duplicate, true, 1));
+        assertEquals(seed.version, db.records().catalogInfo().version);
+        assertEquals(seed.services.size(), db.records().services().size());
+        assertFalse(db.records().catalogInfo().imported);
+    }
+
+    @Test
+    public void resetClearsRecordsAndRestoresBundledCatalogAtomically() throws Exception {
+        Catalog seed = bundled();
+        CatalogRepository.persist(db, new Catalog("custom", seed.services, true, 10), true, 10);
+        TankenDatabase.LessonRow lesson = new TankenDatabase.LessonRow();
+        lesson.id = "lesson";
+        db.records().putLesson(lesson);
+        TankenDatabase.NoticeRow notice = new TankenDatabase.NoticeRow();
+        notice.id = "notice";
+        db.records().insertNotice(notice);
+        TankenDatabase.MotionRow motion = new TankenDatabase.MotionRow();
+        motion.id = "motion";
+        db.records().putMotion(motion);
+        TankenDatabase.ComparisonRow comparison = new TankenDatabase.ComparisonRow();
+        comparison.id = "comparison";
+        db.records().putComparison(comparison);
+        db.records().putMetadata(new TankenDatabase.Metadata("dataGeneration", "2"));
+        db.records().putMetadata(new TankenDatabase.Metadata("resetPending", "1"));
+        ResetData.clear(db, seed, 1000);
+        assertTrue(db.records().lessons().isEmpty());
+        assertTrue(db.records().notices().isEmpty());
+        assertTrue(db.records().motion().isEmpty());
+        assertTrue(db.records().comparisons().isEmpty());
+        assertEquals(seed.version, db.records().catalogInfo().version);
+        assertFalse(db.records().catalogInfo().imported);
+        assertEquals("0", db.records().metadata("resetPending"));
+        assertEquals("1", db.records().metadata("scheduleImported"));
+        assertEquals("1", db.records().metadata("remindersDisabled"));
+        assertEquals("2", db.records().metadata("dataGeneration"));
+        assertEquals("1000", db.records().metadata("historyClearedAt"));
     }
 }

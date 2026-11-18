@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mainNavigation"
+        app:startDestination="@id/home">
+  <fragment
+        android:id="@+id/home"
+        android:name="mx.udg.alumnos.tanken.HomeFragment"
+        android:label="@string/app_name" />
+  <fragment
+        android:id="@+id/reminders"
+        android:name="mx.udg.alumnos.tanken.RemindersFragment"
+        android:label="@string/reminders_title" />
+  <fragment
+        android:id="@+id/history"
+        android:name="mx.udg.alumnos.tanken.HistoryFragment"
+        android:label="@string/history_title" />
+  <fragment
+        android:id="@+id/services"
+        android:name="mx.udg.alumnos.tanken.ServicesFragment"
+        android:label="@string/services_title" />
+</navigation>

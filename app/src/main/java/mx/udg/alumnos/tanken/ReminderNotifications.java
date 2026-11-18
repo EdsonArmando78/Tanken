@@ -42,7 +42,8 @@ final class ReminderNotifications {
         String restriction = restriction(c);
         if (!restriction.isEmpty()) return restriction;
         Intent open =
-                new Intent(c, RemindersActivity.class)
+                MainActivity.destination(c, "reminders")
+                        .putExtra("noticeId", row.id)
                         .setData(Uri.parse("tanken://notice/" + row.id))
                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent content =

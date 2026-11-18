@@ -31,16 +31,16 @@ como fecha de entrega. Registrar las fechas reales de ejecución y correcciones.
 
 | Área | Implementación existente | Trabajo pendiente |
 | --- | --- | --- |
-| Inicio | Reloj, contexto y movimiento compartido; XML Expressive y View Binding | Próximo aviso, navegación final y decisión sobre demostraciones. |
+| Inicio | Jornada, movimiento y próximo aviso; cuatro pestañas con Navigation | Validación física de navegación. |
 | Horario | Room, importación del JSON anterior, edición, cruces, ViewModel y ListAdapter | Integrar el futuro motor de avisos. |
 | Sensores | Fuente compartida de primer plano, filtro, estados, pausa y resúmenes Room | Validación física de lectura y ciclo de vida. |
 | Temporizadores | `ClassTimersViewModel`, `TimersActivity`, `TimerNotifications` | Mantener herramienta independiente; no confundirla con alarmas persistentes. |
 | Comparación | XML Expressive, resultados guardados y reproducibles; sin esperas artificiales | Validación física de cancelación y reproducción. |
 | Bienestar real | Coordinador persistente, alarmas flexibles, preferencias y acciones sobre IDs estables | Validación física de avisos y recuperación. |
-| Historial | Room v2, filtros por fecha/tipo, detalles y dos modalidades de borrado confirmado | Validación física de filtros y borrado. |
+| Historial | Room v3, filtros por fecha/tipo, detalles y dos modalidades de borrado confirmado | Validación física de filtros y borrado. |
 | Respiración | Sesión visual 4/4, pausa/detención y ViewModel; pausa al salir | Validación física de animación y rotación. |
-| Servicios | Sin directorio ni catálogo | Datos institucionales iniciales e importación validada. |
-| Ajustes y privacidad | Preferencias persistentes, pausa desde Movimiento y base excluida de respaldos | Sustituir la pantalla de ajustes de ejemplo. |
+| Servicios | Directorio local, detalle e importación JSON validada; Room v3 | Validación física de importación y enlaces. |
+| Ajustes y privacidad | Permisos/canales, lectura, restablecimiento y exclusión de respaldos | Validación física del borrado y permisos. |
 | Pruebas | 31 unitarias aprobadas; instrumentadas preparadas para migración, persistencia, cancelación y ciclo de vida | Ejecutar instrumentadas y recorrido físico. |
 
 Configuración actual: Java 11 para el código, Gradle 9.6.0, AGP 9.5.1, daemon
@@ -175,15 +175,15 @@ que pueda detenerse sin dejar tareas ejecutándose.
 
 ### 6. Añadir servicios e importación del catálogo
 
-- [ ] Preparar JSON inicial de Medicina General, Psicología y Nutrición con datos
+- [x] Preparar JSON inicial de Medicina General, Psicología y Nutrición con datos
   verificados en publicaciones oficiales: ID, nombre, ubicación, contacto, horario
   cuando exista, fuente y fecha de revisión. No inventar contactos.
-- [ ] Mostrar directorio y detalle sin red; abrir enlaces externamente y controlar
+- [x] Mostrar directorio y detalle sin red; abrir enlaces externamente y controlar
   fallos por falta de conectividad o aplicación compatible.
-- [ ] Importar mediante el selector de documentos del sistema sin acceso general
+- [x] Importar mediante el selector de documentos del sistema sin acceso general
   al almacenamiento. Limitar tamaño y validar versión, campos, IDs duplicados y
   enlaces antes de aplicar la actualización completa.
-- [ ] Conservar catálogo anterior ante error y mostrar versión/fuente/fecha.
+- [x] Conservar catálogo anterior ante error y mostrar versión/fuente/fecha.
   Preparar un ejemplo válido y otro inválido; sin descarga automática ni servidor.
 
 Criterio de salida: importar cambios de contacto y ubicación, consultarlos sin red
@@ -191,17 +191,17 @@ y rechazar un archivo inválido conservando íntegro el catálogo vigente.
 
 ### 7. Integrar navegación, ajustes y privacidad
 
-- [ ] Organizar inicio con jornada, movimiento y próximo aviso, más accesos a
+- [x] Organizar inicio con jornada, movimiento y próximo aviso, más accesos a
   horario, avisos, historial, respiración, servicios y comparación.
-- [ ] Hacer efectivos permisos, preferencias, pausa de lectura y borrado de datos.
+- [x] Hacer efectivos permisos, preferencias, pausa de lectura y borrado de datos.
   Configurar `backup_rules.xml` y `data_extraction_rules.xml` para excluir registros
   sensibles según las rutas reales del almacenamiento.
-- [ ] Revisar rotación, segundo plano, teclado, fuentes grandes, Atrás y estados
-  vacíos. Mantener textos y unidades en recursos.
-- [ ] Sustituir tutorial antiguo por ayuda del producto. Retirar calculadora,
+- [x] Preparar ciclo de vida, teclado, Atrás, estados vacíos y filtros en horizontal.
+  Mantener textos y unidades en recursos; comprobar presentación en el teléfono.
+- [x] Sustituir tutorial antiguo por ayuda del producto. Retirar calculadora,
   saludo de ejemplo, video y layouts antiguos solo después de retirar sus accesos
   y referencias en Java, XML y manifiesto.
-- [ ] Evitar rediseño masivo y migraciones; completar las rutas principales usando
+- [x] Evitar rediseño masivo y migraciones; completar las rutas principales usando
   componentes existentes.
 
 Criterio de salida: cada botón tiene una función real y no quedan referencias
@@ -271,6 +271,8 @@ comportamiento si falta compilar o ejecutar la prueba correspondiente.
 | 18/11/2026 | Fases 2 y 3: Room, importación del horario, edición, adquisición compartida, guardado de comparaciones y XML Expressive con View Binding/ListAdapter/ViewModel/LiveData. `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | Correcto: 27 pruebas unitarias, 0 fallos; APK debug y de pruebas generados; lint sin incidencias. Esquema Room v1 exportado en `app/schemas/`. | Ejecutar pruebas instrumentadas y revisión visual/física cuando haya teléfono. Otros módulos en `docs/PENDIENTES_INTEGRACION.md`. |
 
 | 18/11/2026 | Fases 4 y 5: avisos persistentes, recuperación, historial/borrado, reproducción de comparaciones y respiración. `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | Correcto: 31 pruebas unitarias, 0 fallos; ambos APK generados y lint sin incidencias. Migración v1→v2 y pruebas instrumentadas de ciclo de vida compiladas. | Ejecutar instrumentadas y validar alarmas, permisos, reinicio y presentación en el teléfono. |
+
+| 18/11/2026 | Fases 6 y 7: directorio/importación, Room v3, navegación inferior, ajustes/restablecimiento, ayuda y logo. `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | 31 unitarias aprobadas; ambos APK generados; lint sin incidencias. Pruebas instrumentadas de migración, importación y restablecimiento compiladas. | Ejecutar instrumentadas y recorrido físico; comprobar rotación, fuentes grandes, enlaces y borrado. |
 
 El primer intento de Gradle en el entorno restringido no pudo crear su bloqueo
 en `C:\.gradle`. La ejecución registrada utilizó la caché del usuario y terminó

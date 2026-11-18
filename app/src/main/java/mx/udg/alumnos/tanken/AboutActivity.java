@@ -1,50 +1,36 @@
 package mx.udg.alumnos.tanken;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import androidx.activity.EdgeToEdge;
-import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
-public class AboutActivity extends AppCompatActivity {
-    private WebView webView;
-    @SuppressLint("SetJavaScriptEnabled")
-    @Override protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+import mx.udg.alumnos.tanken.databinding.ActivityAboutBinding;
+
+public final class AboutActivity extends AppCompatActivity {
+    private ActivityAboutBinding b;
+
+    @Override
+    protected void onCreate(Bundle saved) {
+        super.onCreate(saved);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_about);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets bars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom);
-            return insets;
-        });
-        webView = findViewById(R.id.webView);
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-        webView.loadUrl("https://nodocentral.org/");
+        b = ActivityAboutBinding.inflate(getLayoutInflater());
+        setContentView(b.getRoot());
+        ProductUi.insets(b.getRoot());
+        b.toolbar.setNavigationOnClickListener(v -> finish());
+        try {
+            b.version.setText(
+                    getString(
+                            R.string.about_version,
+                            getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
+        } catch (android.content.pm.PackageManager.NameNotFoundException impossible) {
+            b.version.setText(R.string.app_name);
+        }
+    }
 
-        getOnBackPressedDispatcher().addCallback(
-                this,
-                new OnBackPressedCallback(true) {
-                    @Override
-                    public void handleOnBackPressed() {
-                        if (webView.canGoBack()) {
-                            webView.goBack();
-                        } else {
-                            setEnabled(false);
-                            getOnBackPressedDispatcher().onBackPressed();
-                        }
-                    }
-                }
-        );
+    @Override
+    protected void onDestroy() {
+        b = null;
+        super.onDestroy();
     }
 }

@@ -1,11 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="48dp" tools:context=".AboutActivity">
-    <ImageView android:layout_width="72dp" android:layout_height="72dp" android:contentDescription="@string/app_icon_description" app:srcCompat="@mipmap/ic_launcher" />
-    <TextView style="@style/TextAppearance.Material3.TitleLarge" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/about_title" android:textAlignment="center" />
-    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/about_copyright" android:textAlignment="center" />
-
-    <WebView
-        android:id="@+id/webView"
+<androidx.core.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</LinearLayout>
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+  <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:title="@string/open_about"
+        app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
+        app:navigationContentDescription="@string/back" />
+    <ImageView
+        android:layout_width="144dp"
+        android:layout_height="144dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:src="@drawable/tanken_logo"
+        android:contentDescription="@string/app_icon_description" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/version"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textAppearance="@style/Tanken.Section"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/project"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about_project"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/authors"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about_authors"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/purpose"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/about_purpose"
+        android:textAppearance="@style/Tanken.Body"
+        android:layout_marginBottom="12dp" />
+  </LinearLayout>
+</androidx.core.widget.NestedScrollView>

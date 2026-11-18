@@ -121,6 +121,27 @@ ViewModel/LiveData separan estado e interfaz. Room conserva hasta 30 días, con
 límites por tipo y sin eliminar avisos pendientes. La base está excluida de respaldos.
 Consultar [pendientes de integración](docs/PENDIENTES_INTEGRACION.md).
 
+## Servicios, navegación y datos
+
+Inicio, Recordatorios, Historial y Servicios usan navegación inferior. Ajustes
+permite administrar lectura y notificaciones, o restablecer la app con confirmación:
+borra horario/historial/preferencias, cancela avisos y restaura el catálogo inicial.
+Conserva los permisos concedidos por Android. Room v3 migra los datos anteriores.
+El logo de `Logo.png` se usa en el lanzador y Acerca de.
+
+El directorio funciona sin conexión. Datos iniciales revisados el 18/11/2026 en la
+[Unidad de Atención para la Salud del CUCEI](https://www.cucei.udg.mx/servicios/medicos-y-clinicos).
+El horario publicado corresponde a la unidad; confirmar disponibilidad de cada servicio.
+Desde Servicios se importa JSON UTF-8 de hasta 512 KiB, con confirmación de sustitución
+completa. Un error conserva el catálogo vigente. Ejemplos:
+[catálogo válido](docs/catalogo_valido.json) y [duplicado inválido](docs/catalogo_invalido.json).
+Formato: `schemaVersion: 1`, `version` y entre 1 y 100 `services`; cada servicio requiere
+`id` único, `name`, `location`, `source` HTTPS y `reviewedAt` ISO; `phone`, `extension`,
+`email` y `hours` son opcionales. Los enlaces se abren externamente.
+
+Fases 6 y 7: 31 unitarias aprobadas; APK de aplicación e instrumentadas compilados.
+Pruebas en teléfono pendientes, incluida la migración v2→v3 y el restablecimiento.
+
 ## Organización
 
 ```text
