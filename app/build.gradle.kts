@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.lifecycle.process)
     implementation(libs.lifecycle.viewmodel.savedstate)
     implementation(libs.lifecycle.livedata.core)
+    implementation(libs.lifecycle.livedata)
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.activity)
     implementation(libs.appcompat)

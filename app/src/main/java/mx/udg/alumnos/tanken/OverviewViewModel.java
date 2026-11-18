@@ -25,6 +25,10 @@ public final class OverviewViewModel extends AndroidViewModel {
         return source.state();
     }
 
+    public LiveData<List<TankenDatabase.NoticeRow>> notices() {
+        return Transformations.switchMap(store.lessons(), ignored -> store.openNotices());
+    }
+
     public LiveData<String> error() {
         return store.error();
     }

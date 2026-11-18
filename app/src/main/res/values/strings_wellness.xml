@@ -1,8 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="wellness_title">Simulador de bienestar</string>
-    <string name="wellness_intro">Compara recordatorios de hidratación y pausas con intervalo fijo y con adaptación a tus clases. Usa tu horario guardado y simula las próximas 8 horas en unos 3 segundos.\n\nLos eventos son simulados: no son mediciones ni notificaciones reales. El intervalo es una elección de prueba, no una indicación médica. Todo se procesa en el teléfono.</string>
+    <string name="wellness_intro">Compara recordatorios de hidratación y pausas con intervalo fijo y con adaptación a tus clases. Usa tu horario guardado y simula las próximas 8 horas.\n\nLos eventos son simulados: no son mediciones ni notificaciones reales. El intervalo es una elección de prueba, no una indicación médica. Todo se procesa en el teléfono.</string>
     <string name="wellness_interval">Intervalo de prueba en minutos (5–240)</string>
-    <string name="wellness_default_interval">30</string>
     <string name="wellness_inactivity_option">Escenario de inactividad simulada: incluir pausas</string>
     <string name="wellness_start">Comparar recordatorios</string>
     <string name="wellness_cancel">Cancelar procesamiento</string>
@@ -12,8 +12,6 @@
     <string name="wellness_cancelled">Procesamiento cancelado. Puedes iniciar otra comparación.</string>
     <string name="wellness_error">No se pudo completar la comparación. Inténtalo de nuevo.</string>
     <string name="wellness_invalid_interval">Escribe un número entre 5 y 240 minutos.</string>
-    <string name="wellness_probe">Comprobar respuesta · Pulsaciones: %1$d</string>
-    <string name="wellness_back">Volver al reloj</string>
     <string name="wellness_inactive">Inactividad simulada; hidratación y pausas.</string>
     <string name="wellness_active">Movimiento simulado; solo hidratación.</string>
     <string name="wellness_report_header">SIMULACIÓN · sin lecturas de sensores\nDesde: %1$s\nHasta: %2$s\nIntervalo: %3$d min\nClases semanales guardadas: %4$d\nEscenario: %5$s\n\nAmbas modalidades usan los mismos vencimientos y eventos. La modalidad contextual pospone hasta salir de clase y vuelve a revisar las clases consecutivas. Los avisos fuera de las 8 horas quedan pendientes. Sin clases en este periodo, ambas modalidades coinciden.\n</string>
@@ -27,5 +25,5 @@
     <string name="wellness_pending">Pendiente al terminar la observación</string>
     <string name="wellness_event">\n#%1$d · %2$s\nVencimiento original: %3$s\nEmisión simulada: %4$s\n</string>
     <string name="wellness_rescheduled">Reprogramación por clase: %1$s\n</string>
-    <string name="wellness_execution">\nProcesado en: %1$s. El resultado se recibió mediante Handler en el hilo principal.\nEsta sesión se conserva al girar la pantalla; se descarta al cerrarla.</string>
+    <string name="wellness_default_interval">30</string>
 </resources>

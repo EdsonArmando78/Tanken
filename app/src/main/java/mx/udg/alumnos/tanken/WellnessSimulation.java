@@ -8,9 +8,12 @@ import java.util.List;
 
 /** Reproducible local experiment; these events are not measurements or scheduled alarms. */
 public final class WellnessSimulation {
-    private WellnessSimulation() { }
+    private WellnessSimulation() {}
 
-    public enum Kind { HYDRATION, ACTIVE_BREAK }
+    public enum Kind {
+        HYDRATION,
+        ACTIVE_BREAK
+    }
 
     public static final class Event {
         public final int id;
@@ -19,8 +22,13 @@ public final class WellnessSimulation {
         public final List<ZonedDateTime> rescheduled;
         public final boolean duringClass;
 
-        private Event(int id, Kind kind, ZonedDateTime due, ZonedDateTime delivery,
-                      List<ZonedDateTime> rescheduled, boolean duringClass) {
+        Event(
+                int id,
+                Kind kind,
+                ZonedDateTime due,
+                ZonedDateTime delivery,
+                List<ZonedDateTime> rescheduled,
+                boolean duringClass) {
             this.id = id;
             this.kind = kind;
             originalDue = due;
@@ -40,8 +48,13 @@ public final class WellnessSimulation {
         public final boolean simulatedInactivity;
         public final int intervalMinutes, lessonCount;
 
-        private Comparison(ZonedDateTime start, int interval, boolean inactive, int lessonCount,
-                           List<Event> fixed, List<Event> contextual) {
+        Comparison(
+                ZonedDateTime start,
+                int interval,
+                boolean inactive,
+                int lessonCount,
+                List<Event> fixed,
+                List<Event> contextual) {
             this.start = start;
             end = start.plusHours(8);
             intervalMinutes = interval;
@@ -52,8 +65,11 @@ public final class WellnessSimulation {
         }
     }
 
-    public static Comparison compare(List<AcademicSchedule.Lesson> lessons, ZonedDateTime start,
-                                     int intervalMinutes, boolean inactive) {
+    public static Comparison compare(
+            List<AcademicSchedule.Lesson> lessons,
+            ZonedDateTime start,
+            int intervalMinutes,
+            boolean inactive) {
         if (intervalMinutes < 5 || intervalMinutes > 240) {
             throw new IllegalArgumentException("El intervalo debe estar entre 5 y 240 minutos.");
         }
@@ -61,10 +77,12 @@ public final class WellnessSimulation {
         List<Event> fixed = new ArrayList<>(), contextual = new ArrayList<>();
         ZonedDateTime end = start.plusHours(8);
         int id = 1;
-        for (ZonedDateTime due = start.plusMinutes(intervalMinutes); !due.isAfter(end);
-             due = due.plusMinutes(intervalMinutes)) {
+        for (ZonedDateTime due = start.plusMinutes(intervalMinutes);
+                !due.isAfter(end);
+                due = due.plusMinutes(intervalMinutes)) {
             for (Kind kind : Kind.values()) {
-                // Activity is an explicit synthetic scenario, never inferred from missing sensor data.
+                // Activity is an explicit synthetic scenario, never inferred from missing sensor
+                // data.
                 if (kind == Kind.ACTIVE_BREAK && !inactive) continue;
                 boolean inClass = AcademicSchedule.at(snapshot, due).current != null;
                 fixed.add(new Event(id, kind, due, due, Collections.emptyList(), inClass));
@@ -72,13 +90,20 @@ public final class WellnessSimulation {
                 List<ZonedDateTime> changes = new ArrayList<>();
                 // Reevaluate at every class end, including adjacent classes. Preserve original due.
                 while (!candidate.isAfter(end)) {
-                    AcademicSchedule.Occurrence current = AcademicSchedule.at(snapshot, candidate).current;
+                    AcademicSchedule.Occurrence current =
+                            AcademicSchedule.at(snapshot, candidate).current;
                     if (current == null) break;
-                    candidate = current.end;
+                    candidate = ReminderPolicy.afterClass(snapshot, candidate);
                     changes.add(candidate);
                 }
-                contextual.add(new Event(id++, kind, due, candidate.isAfter(end) ? null : candidate,
-                        changes, false));
+                contextual.add(
+                        new Event(
+                                id++,
+                                kind,
+                                due,
+                                candidate.isAfter(end) ? null : candidate,
+                                changes,
+                                false));
             }
         }
         return new Comparison(start, intervalMinutes, inactive, snapshot.size(), fixed, contextual);

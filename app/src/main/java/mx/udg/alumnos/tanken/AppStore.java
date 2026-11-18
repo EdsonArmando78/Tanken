@@ -29,26 +29,46 @@ public final class AppStore {
     private volatile List<AcademicSchedule.Lesson> snapshot = Collections.emptyList();
     private volatile boolean ready;
     private final TankenDatabase db;
+    private final ReminderCoordinator reminders;
+    private WellnessPreferences currentPreferences;
     private final Context context;
 
     AppStore(Context context) {
         this.context = context;
         db =
                 Room.databaseBuilder(context, TankenDatabase.class, "tanken.db")
+                        .addMigrations(TankenDatabase.MIGRATION_1_2)
                         .openHelperFactory(new PreservingOpenHelperFactory())
                         .build();
+        reminders = new ReminderCoordinator(context, db);
         io.execute(
                 () -> {
                     try {
                         String warning = LegacyScheduleImport.run(db, context);
                         if (warning != null) error.postValue(warning);
                         try {
-                            preferences.postValue(readPreferences());
+                            currentPreferences = readPreferences();
+                            if ("1".equals(db.records().metadata("remindersDisabled"))) {
+                                WellnessPreferences p = currentPreferences;
+                                writePreferences(
+                                        new WellnessPreferences(
+                                                false,
+                                                false,
+                                                false,
+                                                p.hydrationMinutes,
+                                                p.breakMinutes,
+                                                p.classLeadMinutes,
+                                                p.dayMask,
+                                                p.silenceStart,
+                                                p.silenceEnd));
+                            } else preferences.postValue(currentPreferences);
                         } catch (RuntimeException failure) {
                             report(failure);
                         }
                         prune();
                         refresh();
+                        if (currentPreferences != null)
+                            reminders.reconcile(currentPreferences, snapshot, false);
                     } catch (RuntimeException failure) {
                         report(failure);
                     }
@@ -76,32 +96,42 @@ public final class AppStore {
                 LocalTime.parse(p.getString("silenceEnd", "07:00")));
     }
 
-    public void savePreferences(WellnessPreferences value) {
+    private void writePreferences(WellnessPreferences value) {
+        boolean saved =
+                context.getSharedPreferences("wellness_preferences", Context.MODE_PRIVATE)
+                        .edit()
+                        .putInt("formatVersion", WellnessPreferences.FORMAT_VERSION)
+                        .putBoolean("hydrationEnabled", value.hydrationEnabled)
+                        .putBoolean("breaksEnabled", value.breaksEnabled)
+                        .putBoolean("classesEnabled", value.classesEnabled)
+                        .putInt("hydrationMinutes", value.hydrationMinutes)
+                        .putInt("breakMinutes", value.breakMinutes)
+                        .putInt("classLeadMinutes", value.classLeadMinutes)
+                        .putInt("dayMask", value.dayMask)
+                        .putString("silenceStart", value.silenceStart.toString())
+                        .putString("silenceEnd", value.silenceEnd.toString())
+                        .commit();
+        if (!saved) throw new IllegalStateException("Preferences write failed");
+        currentPreferences = value;
+        preferences.postValue(value);
+    }
+
+    public void savePreferences(
+            WellnessPreferences value, java.util.function.Consumer<String> done) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
-                        if (preferences.getValue() == null)
+                        if (currentPreferences == null)
                             throw new IllegalStateException("Preferences not readable");
-                        boolean saved =
-                                context.getSharedPreferences(
-                                                "wellness_preferences", Context.MODE_PRIVATE)
-                                        .edit()
-                                        .putInt("formatVersion", WellnessPreferences.FORMAT_VERSION)
-                                        .putBoolean("hydrationEnabled", value.hydrationEnabled)
-                                        .putBoolean("breaksEnabled", value.breaksEnabled)
-                                        .putBoolean("classesEnabled", value.classesEnabled)
-                                        .putInt("hydrationMinutes", value.hydrationMinutes)
-                                        .putInt("breakMinutes", value.breakMinutes)
-                                        .putInt("classLeadMinutes", value.classLeadMinutes)
-                                        .putInt("dayMask", value.dayMask)
-                                        .putString("silenceStart", value.silenceStart.toString())
-                                        .putString("silenceEnd", value.silenceEnd.toString())
-                                        .commit();
-                        if (!saved) throw new IllegalStateException("Preferences write failed");
-                        preferences.postValue(value);
+                        writePreferences(value);
+                        db.records()
+                                .putMetadata(new TankenDatabase.Metadata("remindersDisabled", "0"));
+                        reminders.reconcile(value, snapshot, true);
+                        main.post(() -> done.accept(null));
                     } catch (RuntimeException failure) {
                         report(failure);
+                        main.post(() -> done.accept(context.getString(R.string.storage_failed)));
                     }
                 });
     }
@@ -155,6 +185,8 @@ public final class AppStore {
                                     db.records().putLesson(new TankenDatabase.LessonRow(lesson));
                                 });
                         refresh();
+                        if (currentPreferences != null)
+                            reminders.reconcile(currentPreferences, snapshot, false);
                         main.post(() -> done.accept(null));
                     } catch (IllegalArgumentException invalid) {
                         main.post(() -> done.accept(invalid.getMessage()));
@@ -172,6 +204,8 @@ public final class AppStore {
                         requireReady();
                         db.records().deleteLesson(id);
                         refresh();
+                        if (currentPreferences != null)
+                            reminders.reconcile(currentPreferences, snapshot, false);
                     } catch (RuntimeException failure) {
                         report(failure);
                     }
@@ -197,6 +231,8 @@ public final class AppStore {
                 () -> {
                     try {
                         requireReady();
+                        String cutoff = db.records().metadata("historyClearedAt");
+                        if (cutoff != null && row.startedAt < Long.parseLong(cutoff)) return;
                         db.records().putMotion(row);
                         prune();
                     } catch (RuntimeException failure) {
@@ -206,14 +242,19 @@ public final class AppStore {
     }
 
     public void saveComparison(
-            String id, List<AcademicSchedule.Lesson> input, WellnessSimulation.Comparison result) {
+            String id,
+            List<AcademicSchedule.Lesson> input,
+            WellnessSimulation.Comparison result,
+            long executedAt) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
+                        String cutoff = db.records().metadata("historyClearedAt");
+                        if (cutoff != null && executedAt < Long.parseLong(cutoff)) return;
                         TankenDatabase.ComparisonRow row = new TankenDatabase.ComparisonRow();
                         row.id = id;
-                        row.createdAt = System.currentTimeMillis();
+                        row.createdAt = executedAt;
                         row.zone = result.start.getZone().getId();
                         row.inputAndResults = ComparisonCodec.encode(input, result);
                         db.records().putComparison(row);
@@ -224,49 +265,150 @@ public final class AppStore {
                 });
     }
 
-    public void createNotice(TankenDatabase.NoticeRow row) {
+    public LiveData<List<TankenDatabase.NoticeRow>> openNotices() {
+        return db.records().observeOpenNotices();
+    }
+
+    public LiveData<List<HistoryRow>> history(long from, long until, String category) {
+        return db.records().history(from, until, category);
+    }
+
+    public void reconcileReminders() {
+        handleReminderIntent(new android.content.Intent(), () -> {});
+    }
+
+    public void handleReminderIntent(android.content.Intent intent, Runnable finished) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
-                        if (row.id.isEmpty()
-                                || row.kind.isEmpty()
-                                || row.originalDue <= 0
-                                || !row.state.equals("SCHEDULED"))
-                            throw new IllegalArgumentException("Invalid notice");
-                        db.records().insertNotice(row);
+                        if (currentPreferences == null)
+                            throw new IllegalStateException("Preferences unavailable");
+                        if (ReminderReceiver.RESPOND.equals(intent.getAction())) {
+                            reminders.respond(
+                                    intent.getStringExtra("id"),
+                                    intent.getLongExtra("revision", -1),
+                                    NoticeRules.State.valueOf(intent.getStringExtra("response")),
+                                    currentPreferences,
+                                    snapshot);
+                        } else reminders.reconcile(currentPreferences, snapshot, false);
                     } catch (RuntimeException failure) {
                         report(failure);
+                    } finally {
+                        finished.run();
                     }
                 });
     }
 
-    public void respond(
-            String id,
-            String actionId,
-            NoticeRules.State next,
-            NoticeRules.Reason reason,
-            long attempt,
-            java.util.function.Consumer<Boolean> done) {
+    public void respondNotice(TankenDatabase.NoticeRow row, NoticeRules.State response) {
+        android.content.Intent intent =
+                new android.content.Intent()
+                        .setAction(ReminderReceiver.RESPOND)
+                        .putExtra("id", row.id)
+                        .putExtra("revision", row.revision)
+                        .putExtra("response", response.name());
+        handleReminderIntent(intent, () -> {});
+    }
+
+    public void loadComparison(
+            String id, java.util.function.Consumer<TankenDatabase.ComparisonRow> done) {
         io.execute(
                 () -> {
-                    boolean[] changed = {false};
+                    TankenDatabase.ComparisonRow value = null;
                     try {
                         requireReady();
-                        changed[0] =
-                                NoticeTransitions.apply(
-                                        db,
-                                        id,
-                                        actionId,
-                                        next,
-                                        reason,
-                                        System.currentTimeMillis(),
-                                        attempt);
-                        prune();
+                        value = db.records().comparison(id);
                     } catch (RuntimeException failure) {
                         report(failure);
                     }
-                    main.post(() -> done.accept(changed[0]));
+                    TankenDatabase.ComparisonRow result = value;
+                    main.post(() -> done.accept(result));
+                });
+    }
+
+    public void loadDetail(
+            String category, String id, java.util.function.Consumer<RecordDetail> done) {
+        io.execute(
+                () -> {
+                    RecordDetail value;
+                    try {
+                        requireReady();
+                        value = RecordText.detail(context, db.records(), category, id);
+                    } catch (RuntimeException failure) {
+                        report(failure);
+                        value =
+                                new RecordDetail(
+                                        context.getString(R.string.history_title),
+                                        context.getString(R.string.record_unavailable),
+                                        null,
+                                        null);
+                    }
+                    RecordDetail result = value;
+                    main.post(() -> done.accept(result));
+                });
+    }
+
+    public void clearHistory(
+            long from,
+            long until,
+            String category,
+            boolean everything,
+            java.util.function.Consumer<String> done) {
+        io.execute(
+                () -> {
+                    try {
+                        requireReady();
+                        if (everything) {
+                            // The durable gate also protects against a process death between
+                            // preferences and deletion.
+                            db.records()
+                                    .putMetadata(
+                                            new TankenDatabase.Metadata("remindersDisabled", "1"));
+                            reminders.cancelAlarm();
+                            ReminderNotifications.cancelAll(context);
+                            if (currentPreferences == null)
+                                throw new IllegalStateException("Preferences unavailable");
+                            WellnessPreferences p = currentPreferences;
+                            writePreferences(
+                                    new WellnessPreferences(
+                                            false,
+                                            false,
+                                            false,
+                                            p.hydrationMinutes,
+                                            p.breakMinutes,
+                                            p.classLeadMinutes,
+                                            p.dayMask,
+                                            p.silenceStart,
+                                            p.silenceEnd));
+                        }
+                        db.runInTransaction(
+                                () -> {
+                                    if (everything) {
+                                        db.records()
+                                                .putMetadata(
+                                                        new TankenDatabase.Metadata(
+                                                                "historyClearedAt",
+                                                                Long.toString(
+                                                                        System
+                                                                                .currentTimeMillis())));
+                                        db.records().deleteAllNotices();
+                                        db.records().deleteMotion(Long.MIN_VALUE, Long.MAX_VALUE);
+                                        db.records()
+                                                .deleteComparisons(Long.MIN_VALUE, Long.MAX_VALUE);
+                                    } else {
+                                        if (category.equals("ALL") || category.equals("NOTICE"))
+                                            db.records().deleteClosedNotices(from, until);
+                                        if (category.equals("ALL") || category.equals("MOTION"))
+                                            db.records().deleteMotion(from, until);
+                                        if (category.equals("ALL") || category.equals("COMPARISON"))
+                                            db.records().deleteComparisons(from, until);
+                                    }
+                                });
+                        main.post(() -> done.accept(null));
+                    } catch (RuntimeException failure) {
+                        report(failure);
+                        main.post(() -> done.accept(context.getString(R.string.storage_failed)));
+                    }
                 });
     }
 }

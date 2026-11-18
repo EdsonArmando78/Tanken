@@ -35,13 +35,13 @@ como fecha de entrega. Registrar las fechas reales de ejecución y correcciones.
 | Horario | Room, importación del JSON anterior, edición, cruces, ViewModel y ListAdapter | Integrar el futuro motor de avisos. |
 | Sensores | Fuente compartida de primer plano, filtro, estados, pausa y resúmenes Room | Validación física de lectura y ciclo de vida. |
 | Temporizadores | `ClassTimersViewModel`, `TimersActivity`, `TimerNotifications` | Mantener herramienta independiente; no confundirla con alarmas persistentes. |
-| Comparación | Experimento conservado; ejecuciones completadas guardadas con entradas y resultados | Consulta del historial y renovación visual. |
-| Bienestar real | Sin motor persistente de recordatorios | Reglas, preferencias, Realizado/Posponer/Omitir y recuperación. |
-| Historial | Room para avisos/transiciones, movimiento y comparaciones; retención acotada | Pantalla con filtros y borrado confirmado. |
-| Respiración | Sin módulo específico | Ejercicio visual voluntario con inicio, pausa/detención y cierre seguro. |
+| Comparación | XML Expressive, resultados guardados y reproducibles; sin esperas artificiales | Validación física de cancelación y reproducción. |
+| Bienestar real | Coordinador persistente, alarmas flexibles, preferencias y acciones sobre IDs estables | Validación física de avisos y recuperación. |
+| Historial | Room v2, filtros por fecha/tipo, detalles y dos modalidades de borrado confirmado | Validación física de filtros y borrado. |
+| Respiración | Sesión visual 4/4, pausa/detención y ViewModel; pausa al salir | Validación física de animación y rotación. |
 | Servicios | Sin directorio ni catálogo | Datos institucionales iniciales e importación validada. |
 | Ajustes y privacidad | Preferencias persistentes, pausa desde Movimiento y base excluida de respaldos | Sustituir la pantalla de ajustes de ejemplo. |
-| Pruebas | 27 unitarias aprobadas; APK de pruebas con importación, estados, persistencia y rotación | Ejecutar instrumentadas y recorrido físico. |
+| Pruebas | 31 unitarias aprobadas; instrumentadas preparadas para migración, persistencia, cancelación y ciclo de vida | Ejecutar instrumentadas y recorrido físico. |
 
 Configuración actual: Java 11 para el código, Gradle 9.6.0, AGP 9.5.1, daemon
 JDK 25, `compileSdk 37`, `targetSdk 37`, `minSdk 26`. Reutilizar Java, XML,
@@ -124,24 +124,26 @@ y conserva sesión al rotar. No atribuye inactividad a periodos sin lectura.
 
 ### 4. Implementar avisos reales y recuperación
 
-- [ ] Compartir reglas contextuales con `WellnessSimulation` sin modificar las
+- [x] Compartir reglas contextuales con `WellnessSimulation` sin modificar las
   condiciones controladas de su comparación.
-- [ ] Añadir configuración de hidratación, pausas y anticipación de clase:
+- [x] Añadir configuración de hidratación, pausas y anticipación de clase:
   activación, intervalo, días y horario de silencio, con entradas validadas.
-- [ ] Hidratación depende del tiempo elegido; las pausas pueden considerar contexto
+- [x] Hidratación depende del tiempo elegido; las pausas pueden considerar contexto
   y movimiento disponible. No contar periodos sin lectura como reposo comprobado.
-- [ ] Programar vencimientos fuera de una Activity, con eventos guardados y alarmas
+- [x] Programar vencimientos fuera de una Activity, con eventos guardados y alarmas
   flexibles del sistema. No pedir alarmas exactas para bienestar ni mantener un
   hilo durmiendo como mecanismo de persistencia.
-- [ ] Al vencer, releer preferencias y horario; reevaluar clase, silencio,
+- [x] Al vencer, releer preferencias y horario; reevaluar clase, silencio,
   pertinencia y estado. Conservar el vencimiento original.
-- [ ] Publicar notificación y pantalla con Realizado/Posponer/Omitir sobre el mismo
+- [x] Publicar notificación y pantalla con Realizado/Posponer/Omitir sobre el mismo
   ID. Si se deniega el permiso, conservar el evento consultable en la aplicación.
-- [ ] Recuperar programación tras reinicio, cambio de hora/zona y modificación de
+- [x] Recuperar programación tras reinicio, cambio de hora/zona y modificación de
   horarios o preferencias. Cancelar lo que ya no corresponda; declarar los
   receptores y permisos necesarios en el manifiesto.
-- [ ] Reutilizar canales/utilidades cuando corresponda y mantener separados los
+- [x] Reutilizar canales/utilidades cuando corresponda y mantener separados los
   temporizadores académicos ligados a pantalla.
+
+Implementación realizada; queda la validación física de alarmas, permisos y recuperación.
 
 Criterio de salida: los avisos no dependen de dejar su pantalla abierta ni se
 duplican por recreación o entrega repetida. Registrar restricciones y retrasos de
@@ -149,19 +151,24 @@ Android; distinguir muerte del proceso de detención forzada por el usuario.
 
 ### 5. Cerrar historial, comparación y respiración
 
-- [ ] Filtrar historial por fecha/tipo, mostrando origen real/simulado, estado,
+- [x] Filtrar historial por fecha/tipo, mostrando origen real/simulado, estado,
   vencimiento y respuesta. Confirmar borrado y tratar avisos pendientes de manera
   coherente con la opción elegida antes de eliminar datos.
 - [x] Guardar entrada, horario usado, periodo, zona, modalidad y eventos de cada
   comparación para reproducir el resultado. Identificar siempre la simulación.
-- [ ] Conservar el caso sin emisiones como no calculable y comparar total emitido,
+- [x] Conservar el caso sin emisiones como no calculable y comparar total emitido,
   retrasos y pendientes. No presentar la simulación como notificación real.
-- [ ] Retirar los tres segundos de espera artificial si ya no aportan al producto;
+- [x] Retirar los tres segundos de espera artificial si ya no aportan al producto;
   adaptar las pruebas de hilos mediante tareas controlables, manteniendo
   cancelación y rechazo de resultados antiguos.
-- [ ] Implementar respiración visual sencilla por iniciativa del usuario, sin
+- [x] Implementar respiración visual sencilla por iniciativa del usuario, sin
   detectar estrés, prometer efectos clínicos ni añadir audio o bibliotecas.
   Detener callbacks al salir y definir pausa y rotación.
+
+Decisiones: pausa por tiempo sin datos recientes; silencio para todos los avisos;
+Posponer añade 10 minutos. Respiración de dos minutos, ciclos 4/4 sin retenciones.
+El borrado filtrado conserva pendientes; el borrado completo los cancela y desactiva
+recordatorios. Room v2 incorpora vigencia, revisión y datos de entrega sin borrar v1.
 
 Criterio de salida: registros persistentes, fuentes distinguibles y respiración
 que pueda detenerse sin dejar tareas ejecutándose.
@@ -262,6 +269,8 @@ comportamiento si falta compilar o ejecutar la prueba correspondiente.
 | 18/11/2026 | Validación final: `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | Correcta después de eliminar también dos llamadas a `super.onCleared()` marcadas por Lifecycle nuevo. 14 pruebas unitarias aprobadas, ambos APK generados y lint: `No issues found` (0 errores, 0 advertencias). Sin nuevas supresiones ni baseline de lint. | Pruebas instrumentadas y recorrido manual: ADB no detectó dispositivos conectados. |
 
 | 18/11/2026 | Fases 2 y 3: Room, importación del horario, edición, adquisición compartida, guardado de comparaciones y XML Expressive con View Binding/ListAdapter/ViewModel/LiveData. `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | Correcto: 27 pruebas unitarias, 0 fallos; APK debug y de pruebas generados; lint sin incidencias. Esquema Room v1 exportado en `app/schemas/`. | Ejecutar pruebas instrumentadas y revisión visual/física cuando haya teléfono. Otros módulos en `docs/PENDIENTES_INTEGRACION.md`. |
+
+| 18/11/2026 | Fases 4 y 5: avisos persistentes, recuperación, historial/borrado, reproducción de comparaciones y respiración. `testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug` | Correcto: 31 pruebas unitarias, 0 fallos; ambos APK generados y lint sin incidencias. Migración v1→v2 y pruebas instrumentadas de ciclo de vida compiladas. | Ejecutar instrumentadas y validar alarmas, permisos, reinicio y presentación en el teléfono. |
 
 El primer intento de Gradle en el entorno restringido no pudo crear su bloqueo
 en `C:\.gradle`. La ejecución registrada utilizó la caché del usuario y terminó

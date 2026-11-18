@@ -54,11 +54,17 @@ public class WellnessViewModel extends AndroidViewModel {
         final List<AcademicSchedule.Lesson> lessons;
         final int interval;
         final boolean inactive;
-        final ZonedDateTime start = ZonedDateTime.now().withNano(0);
+        final ZonedDateTime start;
+        final long executedAt = System.currentTimeMillis();
         final long started = SystemClock.elapsedRealtime();
         final AtomicBoolean cancelled = new AtomicBoolean();
 
-        Request(int interval, boolean inactive, List<AcademicSchedule.Lesson> lessons) {
+        Request(
+                int interval,
+                boolean inactive,
+                List<AcademicSchedule.Lesson> lessons,
+                ZonedDateTime start) {
+            this.start = start;
             this.interval = interval;
             this.inactive = inactive;
             this.lessons = lessons;
@@ -91,8 +97,19 @@ public class WellnessViewModel extends AndroidViewModel {
     // Accessed only on the main thread. Workers receive immutable requests via Message.obj.
     private Request active;
 
+    interface WorkGate {
+        void await(AtomicBoolean cancelled) throws InterruptedException;
+    }
+
+    private final WorkGate gate;
+
     public WellnessViewModel(Application application) {
+        this(application, cancelled -> {});
+    }
+
+    WellnessViewModel(Application application, WorkGate gate) {
         super(application);
+        this.gate = gate;
         handlerThread.start();
         backgroundHandler =
                 new Handler(
@@ -116,7 +133,7 @@ public class WellnessViewModel extends AndroidViewModel {
             state.setValue(new State(Status.ERROR, 0, null, 0, ""));
             return;
         }
-        active = new Request(interval, inactive, store.snapshot());
+        active = new Request(interval, inactive, store.snapshot(), ZonedDateTime.now().withNano(0));
         state.setValue(new State(Status.RUNNING, 0, null, 0, ""));
         backgroundHandler.obtainMessage(RUN, active).sendToTarget();
     }
@@ -149,13 +166,27 @@ public class WellnessViewModel extends AndroidViewModel {
         }
     }
 
-    // Three seconds of simulated heavy work, with cooperative cancellation every 100 ms.
     private boolean pause(Request request) throws InterruptedException {
-        for (int i = 0; i < 10; i++) {
-            if (closed || request.cancelled.get()) return false;
-            Thread.sleep(100);
-        }
+        gate.await(request.cancelled);
         return !closed && !request.cancelled.get();
+    }
+
+    @MainThread
+    public void replay(String payload) {
+        if (closed || active != null) return;
+        try {
+            ComparisonCodec.Input input = ComparisonCodec.input(payload);
+            active = new Request(input.interval, input.inactive, input.lessons, input.start);
+            state.setValue(new State(Status.RUNNING, 0, null, 0, ""));
+            backgroundHandler.obtainMessage(RUN, active).sendToTarget();
+        } catch (RuntimeException invalid) {
+            replayFailed();
+        }
+    }
+
+    @MainThread
+    public void replayFailed() {
+        if (!closed) state.setValue(new State(Status.ERROR, 0, null, 0, ""));
     }
 
     private void send(int what, Reply reply) {
@@ -176,7 +207,11 @@ public class WellnessViewModel extends AndroidViewModel {
                         : message.what == ERROR ? Status.ERROR : Status.RUNNING;
         if (status == Status.COMPLETED)
             AppStore.get(getApplication())
-                    .saveComparison(reply.request.id, reply.request.lessons, reply.comparison);
+                    .saveComparison(
+                            reply.request.id,
+                            reply.request.lessons,
+                            reply.comparison,
+                            reply.request.executedAt);
         if (status != Status.RUNNING) active = null;
         state.setValue(
                 new State(
@@ -193,8 +228,7 @@ public class WellnessViewModel extends AndroidViewModel {
             backgroundHandler.removeCallbacksAndMessages(null);
             mainHandler.removeCallbacksAndMessages(null);
             handlerThread.quit();
-            handlerThread
-                    .interrupt(); // Wake a simulated sleep without blocking the UI with join().
+            handlerThread.interrupt(); // Also releases controlled work when the ViewModel closes.
         }
     }
 }

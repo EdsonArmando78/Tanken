@@ -27,6 +27,7 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
         public final Availability availability;
         public final float x, y, z;
         public final long at, ageMillis, samples, observedMillis;
+        public final long sampleElapsedMillis;
         public final double movement, peak;
         public final boolean enabled;
         public final String sessionId;
@@ -40,7 +41,9 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
                 long ageMillis,
                 MotionAccumulator accumulator,
                 boolean enabled,
-                String sessionId) {
+                String sessionId,
+                long sampleElapsedMillis) {
+            this.sampleElapsedMillis = sampleElapsedMillis;
             this.availability = availability;
             this.x = x;
             this.y = y;
@@ -57,6 +60,21 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
     }
 
     private final MutableLiveData<State> state = new MutableLiveData<>();
+    private volatile State latest;
+    private volatile long lastMovementElapsed;
+
+    public boolean recentlyMoving() {
+        State value = latest;
+        long now = SystemClock.elapsedRealtime();
+        return value != null
+                && (value.availability == Availability.STILL
+                        || value.availability == Availability.MOVING
+                        || value.availability == Availability.STRONG)
+                && lastMovementElapsed > 0
+                && now - lastMovementElapsed < 5000
+                && now - value.sampleElapsedMillis < 5000;
+    }
+
     private final SensorManager manager;
     private final Sensor sensor;
     private final Handler worker;
@@ -133,6 +151,7 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
                     at = 0;
                     received = 0;
                     sessionId = UUID.randomUUID().toString();
+                    lastMovementElapsed = 0;
                     availability = listening ? Availability.WAITING : availability;
                     publish();
                 });
@@ -195,6 +214,7 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
         z = event.values[2];
         at = now;
         received = SystemClock.elapsedRealtime();
+        if (accumulator.movement >= 0.8) lastMovementElapsed = received;
         if (windowSamples == 0) windowStarted = now;
         windowSamples++;
         windowObserved += delta;
@@ -231,7 +251,7 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
     }
 
     private void publish() {
-        state.postValue(
+        State value =
                 new State(
                         availability,
                         x,
@@ -241,7 +261,10 @@ public final class MotionSource implements DefaultLifecycleObserver, SensorEvent
                         received == 0 ? -1 : SystemClock.elapsedRealtime() - received,
                         accumulator,
                         enabled,
-                        sessionId));
+                        sessionId,
+                        received);
+        latest = value;
+        state.postValue(value);
     }
 
     @Override

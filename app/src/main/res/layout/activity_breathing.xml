@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='utf-8'?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:title="@string/breathing_title"
+            app:titleTextAppearance="@style/Tanken.Section"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="?attr/colorOnSurface"
+            app:navigationContentDescription="@string/back" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/intro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_intro"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/phase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_ready"
+            android:textAppearance="@style/Tanken.Title"
+            android:layout_marginBottom="12dp" />
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="240dp">
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/orb"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:importantForAccessibility="no"
+                app:cardCornerRadius="100dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer"
+                app:strokeWidth="0dp" />
+        </FrameLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/remaining"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_ready"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="12dp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/start"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_start" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pause"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_pause" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/stop"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_stop" />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

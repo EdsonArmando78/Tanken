@@ -14,6 +14,36 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(AndroidJUnit4.class)
 public class ProductRotationTest {
     @Test
+    public void breathingRotatesWithoutRestartingAndPausesWhenHidden() {
+        AtomicReference<BreathingViewModel> original = new AtomicReference<>();
+        try (ActivityScenario<BreathingActivity> scenario =
+                ActivityScenario.launch(BreathingActivity.class)) {
+            scenario.onActivity(
+                    activity -> {
+                        BreathingViewModel model =
+                                new ViewModelProvider(activity).get(BreathingViewModel.class);
+                        original.set(model);
+                        model.start();
+                    });
+            scenario.recreate();
+            scenario.onActivity(
+                    activity -> {
+                        BreathingViewModel model =
+                                new ViewModelProvider(activity).get(BreathingViewModel.class);
+                        assertSame(original.get(), model);
+                        assertEquals(
+                                BreathingViewModel.Status.RUNNING, model.state().getValue().status);
+                    });
+            scenario.moveToState(androidx.lifecycle.Lifecycle.State.CREATED);
+            scenario.onActivity(
+                    activity ->
+                            assertEquals(
+                                    BreathingViewModel.Status.PAUSED,
+                                    original.get().state().getValue().status));
+        }
+    }
+
+    @Test
     public void scheduleDraftAndSharedMotionSourceSurviveRotation() {
         AtomicReference<ScheduleViewModel> original = new AtomicReference<>();
         AtomicReference<MotionSource> motion = new AtomicReference<>();

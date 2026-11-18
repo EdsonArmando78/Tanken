@@ -16,9 +16,35 @@ import java.util.List;
             TankenDatabase.ComparisonRow.class,
             TankenDatabase.Metadata.class
         },
-        version = 1,
+        version = 2,
         exportSchema = true)
 public abstract class TankenDatabase extends RoomDatabase {
+    public static final androidx.room.migration.Migration MIGRATION_1_2 =
+            new androidx.room.migration.Migration(1, 2) {
+                @Override
+                public void migrate(@NonNull androidx.sqlite.db.SupportSQLiteDatabase db) {
+                    for (String field : new String[] {"lessonId", "lessonName", "publication"})
+                        db.execSQL(
+                                "ALTER TABLE notices ADD COLUMN "
+                                        + field
+                                        + " TEXT NOT NULL DEFAULT ''");
+                    for (String field :
+                            new String[] {
+                                "targetStart",
+                                "expiresAt",
+                                "receivedAt",
+                                "emittedAt",
+                                "answeredAt",
+                                "revision",
+                                "userNotBefore"
+                            })
+                        db.execSQL(
+                                "ALTER TABLE notices ADD COLUMN "
+                                        + field
+                                        + " INTEGER NOT NULL DEFAULT 0");
+                }
+            };
+
     public abstract Records records();
 
     @Entity(tableName = "lessons", indices = @Index(value = {"day", "start"}))
@@ -59,6 +85,17 @@ public abstract class TankenDatabase extends RoomDatabase {
         @NonNull public String kind = "", origin = "REAL", state = "SCHEDULED";
         @NonNull public String reason = "", response = "", zone = "";
         public long createdAt, originalDue, nextAttempt, updatedAt;
+        @ColumnInfo(defaultValue = "''")
+        @NonNull
+        public String lessonId = "", lessonName = "", publication = "";
+        @ColumnInfo(defaultValue = "0")
+        public long targetStart,
+                expiresAt,
+                receivedAt,
+                emittedAt,
+                answeredAt,
+                revision,
+                userNotBefore;
     }
 
     @Entity(
@@ -113,6 +150,48 @@ public abstract class TankenDatabase extends RoomDatabase {
 
     @Dao
     public interface Records {
+        @Query(
+                "SELECT * FROM notices WHERE state NOT IN ('COMPLETED','SKIPPED','CANCELLED') ORDER"
+                    + " BY nextAttempt, originalDue")
+        List<NoticeRow> openNotices();
+
+        @Query(
+                "SELECT * FROM notices WHERE state NOT IN ('COMPLETED','SKIPPED','CANCELLED') ORDER"
+                    + " BY originalDue")
+        LiveData<List<NoticeRow>> observeOpenNotices();
+
+        @Query("SELECT * FROM notice_transitions WHERE noticeId = :id ORDER BY at")
+        List<TransitionRow> transitions(String id);
+
+        @Query("SELECT * FROM comparisons WHERE id = :id")
+        ComparisonRow comparison(String id);
+
+        @Query("SELECT * FROM motion_summaries WHERE id = :id")
+        MotionRow motion(String id);
+
+        @Query(
+                "SELECT * FROM (SELECT id, 'NOTICE' AS category, kind, state, origin, originalDue"
+                    + " AS at, updatedAt AS revision FROM notices UNION ALL SELECT id, 'MOTION',"
+                    + " 'MOTION', '', origin, endedAt, endedAt FROM motion_summaries UNION ALL"
+                    + " SELECT id, 'COMPARISON', 'COMPARISON', '', origin, createdAt, createdAt"
+                    + " FROM comparisons) WHERE at >= :from AND at < :until AND (:category = 'ALL'"
+                    + " OR category = :category) ORDER BY at DESC, id")
+        LiveData<List<HistoryRow>> history(long from, long until, String category);
+
+        @Query(
+                "DELETE FROM notices WHERE originalDue >= :from AND originalDue < :until AND state"
+                    + " IN ('COMPLETED','SKIPPED','CANCELLED')")
+        void deleteClosedNotices(long from, long until);
+
+        @Query("DELETE FROM motion_summaries WHERE endedAt >= :from AND endedAt < :until")
+        void deleteMotion(long from, long until);
+
+        @Query("DELETE FROM comparisons WHERE createdAt >= :from AND createdAt < :until")
+        void deleteComparisons(long from, long until);
+
+        @Query("DELETE FROM notices")
+        void deleteAllNotices();
+
         @Query("SELECT * FROM lessons ORDER BY day, start")
         LiveData<List<LessonRow>> observeLessons();
 

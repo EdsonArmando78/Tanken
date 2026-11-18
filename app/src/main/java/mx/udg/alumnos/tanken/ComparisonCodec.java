@@ -8,7 +8,25 @@ import java.util.List;
 public final class ComparisonCodec {
     private ComparisonCodec() {}
 
-    public static WellnessSimulation.Comparison replay(String payload) {
+    public static final class Input {
+        public final List<AcademicSchedule.Lesson> lessons;
+        public final java.time.ZonedDateTime start;
+        public final int interval;
+        public final boolean inactive;
+
+        Input(
+                List<AcademicSchedule.Lesson> lessons,
+                java.time.ZonedDateTime start,
+                int interval,
+                boolean inactive) {
+            this.lessons = java.util.Collections.unmodifiableList(lessons);
+            this.start = start;
+            this.interval = interval;
+            this.inactive = inactive;
+        }
+    }
+
+    public static Input input(String payload) {
         try {
             JSONObject json = new JSONObject(payload);
             if (json.getInt("formatVersion") != 1
@@ -27,7 +45,7 @@ public final class ComparisonCodec {
                                 java.time.LocalTime.parse(row.getString("start")),
                                 java.time.LocalTime.parse(row.getString("end"))));
             }
-            return WellnessSimulation.compare(
+            return new Input(
                     lessons,
                     java.time.ZonedDateTime.parse(json.getString("start")),
                     json.getInt("intervalMinutes"),
@@ -35,6 +53,50 @@ public final class ComparisonCodec {
         } catch (JSONException invalid) {
             throw new IllegalArgumentException("Invalid comparison snapshot", invalid);
         }
+    }
+
+    public static WellnessSimulation.Comparison replay(String payload) {
+        Input input = input(payload);
+        return WellnessSimulation.compare(
+                input.lessons, input.start, input.interval, input.inactive);
+    }
+
+    public static WellnessSimulation.Comparison read(String payload) {
+        Input input = input(payload);
+        try {
+            JSONObject json = new JSONObject(payload);
+            return new WellnessSimulation.Comparison(
+                    input.start,
+                    input.interval,
+                    input.inactive,
+                    input.lessons.size(),
+                    readEvents(json.getJSONArray("fixed")),
+                    readEvents(json.getJSONArray("contextual")));
+        } catch (JSONException invalid) {
+            throw new IllegalArgumentException("Invalid stored result", invalid);
+        }
+    }
+
+    private static List<WellnessSimulation.Event> readEvents(JSONArray rows) throws JSONException {
+        List<WellnessSimulation.Event> result = new java.util.ArrayList<>();
+        for (int i = 0; i < rows.length(); i++) {
+            JSONObject row = rows.getJSONObject(i);
+            List<java.time.ZonedDateTime> changes = new java.util.ArrayList<>();
+            JSONArray rescheduled = row.getJSONArray("rescheduled");
+            for (int j = 0; j < rescheduled.length(); j++)
+                changes.add(java.time.ZonedDateTime.parse(rescheduled.getString(j)));
+            result.add(
+                    new WellnessSimulation.Event(
+                            row.getInt("id"),
+                            WellnessSimulation.Kind.valueOf(row.getString("kind")),
+                            java.time.ZonedDateTime.parse(row.getString("originalDue")),
+                            row.isNull("delivery")
+                                    ? null
+                                    : java.time.ZonedDateTime.parse(row.getString("delivery")),
+                            changes,
+                            row.getBoolean("duringClass")));
+        }
+        return result;
     }
 
     public static String encode(

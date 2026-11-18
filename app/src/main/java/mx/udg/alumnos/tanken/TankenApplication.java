@@ -17,6 +17,15 @@ public final class TankenApplication extends Application {
         store = new AppStore(this);
         motion = new MotionSource(this);
         ProcessLifecycleOwner.get().getLifecycle().addObserver(motion);
+        ProcessLifecycleOwner.get()
+                .getLifecycle()
+                .addObserver(
+                        new androidx.lifecycle.DefaultLifecycleObserver() {
+                            @Override
+                            public void onStart(androidx.lifecycle.LifecycleOwner owner) {
+                                store.reconcileReminders();
+                            }
+                        });
     }
 
     public MotionSource motion() {

@@ -52,6 +52,9 @@ Tras implementar las fases 2 y 3: 27 pruebas unitarias aprobadas, ambos APK
 generados y lint sin incidencias. Las pruebas instrumentadas y la revisión
 visual en el teléfono siguen pendientes.
 
+Fases 4 y 5: 31 pruebas unitarias aprobadas; migración Room v1→v2 y nuevas
+pruebas instrumentadas preparadas. La validación física sigue pendiente.
+
 ## Instalar en un teléfono físico
 
 Activar depuración USB y autorizar el equipo en el teléfono. Los instaladores
@@ -91,17 +94,28 @@ seleccionar uno con `--serial`. No se inicia un emulador automáticamente.
   horario guardado, con entradas sintéticas y cancelación. Conserva ID,
   vencimiento original, reprogramaciones, emisiones y pendientes. No programa
   notificaciones reales. Guarda comparaciones completadas con sus entradas, horario
-  y resultados para reproducirlas; la pantalla de historial queda pendiente.
+  y resultados para consultarlas o reproducirlas desde Historial.
+
+- Recordatorios: hidratación, pausas y próximas clases, con días y silencio
+  compartidos; acciones Realizado/Posponer 10 min/Omitir y recuperación persistente.
+- Historial: filtros por fecha/tipo, detalles y borrado confirmado. El borrado
+  completo cancela pendientes y desactiva recordatorios; el filtrado los conserva.
+- Respiración: dos minutos de ciclos visuales 4/4; conserva avance al rotar y se
+  pausa al salir.
+
+Las alarmas son flexibles: Android puede retrasarlas. El cierre normal del proceso
+conserva eventos; después de una detención forzada hay que abrir la app para
+reactivar la programación. No se solicita acceso a alarmas exactas.
 
 El monitor usa un filtro de gravedad de 0.5 s y umbrales demostrativos de 0.8 y
 4 m/s². Cambiar la inclinación puede producir detecciones transitorias; no mide
 pasos, pulso ni estados de salud. La ausencia de lecturas no acredita inactividad.
 
 La comparación corre en `HandlerThread("HiloFondo")` y comunica progreso y resultado
-con `Handler` y estados observables. Actualmente incluye tres segundos de trabajo
-simulado. Ese tiempo no es la latencia real de una notificación.
+con `Handler` y estados observables, sin esperas artificiales. El tiempo de cálculo
+no equivale a la latencia de una notificación.
 
-Inicio, Horario y Movimiento usan Material 3 Expressive con colores dinámicos,
+Las pantallas principales y las nuevas usan Material 3 Expressive con colores dinámicos,
 Views XML y View Binding. El horario usa RecyclerView/ListAdapter/DiffUtil;
 ViewModel/LiveData separan estado e interfaz. Room conserva hasta 30 días, con
 límites por tipo y sin eliminar avisos pendientes. La base está excluida de respaldos.

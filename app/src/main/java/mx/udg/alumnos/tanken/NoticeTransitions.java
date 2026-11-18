@@ -31,6 +31,10 @@ final class NoticeTransitions {
                     row.reason = reason.name();
                     row.updatedAt = at;
                     row.nextAttempt = next == NoticeRules.State.SNOOZED ? attempt : 0;
+                    if (reason == NoticeRules.Reason.USER) {
+                        row.answeredAt = at;
+                        row.userNotBefore = next == NoticeRules.State.SNOOZED ? attempt : 0;
+                    }
                     if (next == NoticeRules.State.COMPLETED
                             || next == NoticeRules.State.SKIPPED
                             || reason == NoticeRules.Reason.USER) row.response = next.name();

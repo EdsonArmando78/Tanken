@@ -17,7 +17,12 @@ public final class NoticeRules {
         NONE,
         CLASS,
         USER,
-        SILENCE
+        SILENCE,
+        EXPIRED,
+        DISABLED,
+        SETTINGS_CHANGED,
+        SCHEDULE_CHANGED,
+        MOVEMENT
     }
 
     public static boolean terminal(State s) {
@@ -27,7 +32,7 @@ public final class NoticeRules {
     public static boolean allows(State from, State to, Reason reason, long at, long next) {
         if (terminal(from) || to == State.SCHEDULED) return false;
         if (to == State.SNOOZED)
-            return reason != Reason.NONE
+            return (reason == Reason.CLASS || reason == Reason.USER || reason == Reason.SILENCE)
                     && next > at
                     && (reason != Reason.USER || from == State.ISSUED);
         if (to == State.COMPLETED || to == State.SKIPPED) return from == State.ISSUED;

@@ -85,6 +85,42 @@
                     android:text="@string/motion_title" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Tanken.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/nextNotice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/home_no_notice"
+                    android:textAppearance="@style/Tanken.Section"
+                    android:layout_marginBottom="12dp" />
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/remindersButton"
+                    style="@style/Tanken.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reminders_title" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/historyButton"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/history_title" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/breathingButton"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/breathing_title" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/scheduleButton"
             style="@style/Tanken.Button"

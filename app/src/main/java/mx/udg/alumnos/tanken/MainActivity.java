@@ -65,6 +65,35 @@ public class MainActivity extends AppCompatActivity {
                             b.storageError.setText(e);
                             b.storageError.setVisibility(e.isEmpty() ? View.GONE : View.VISIBLE);
                         });
+        b.remindersButton.setOnClickListener(v -> open(RemindersActivity.class));
+        b.historyButton.setOnClickListener(v -> open(HistoryActivity.class));
+        b.breathingButton.setOnClickListener(v -> open(BreathingActivity.class));
+        model.notices()
+                .observe(
+                        this,
+                        notices -> {
+                            TankenDatabase.NoticeRow next = null;
+                            for (TankenDatabase.NoticeRow notice : notices) {
+                                if (next == null
+                                        || (notice.nextAttempt == 0
+                                                        ? notice.originalDue
+                                                        : notice.nextAttempt)
+                                                < (next.nextAttempt == 0
+                                                        ? next.originalDue
+                                                        : next.nextAttempt)) next = notice;
+                            }
+                            b.nextNotice.setText(
+                                    next == null
+                                            ? getString(R.string.home_no_notice)
+                                            : getString(
+                                                    R.string.home_next_notice,
+                                                    RecordText.kind(this, next.kind),
+                                                    RecordText.date(
+                                                            this,
+                                                            next.nextAttempt == 0
+                                                                    ? next.originalDue
+                                                                    : next.nextAttempt)));
+                        });
         b.scheduleButton.setOnClickListener(v -> open(ScheduleActivity.class));
         b.motionButton.setOnClickListener(v -> open(MotionActivity.class));
         b.timersButton.setOnClickListener(v -> open(TimersActivity.class));

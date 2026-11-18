@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
+    <string name="reminders_title">Recordatorios</string>
+    <string name="reminders_channel_description">Avisos de hidratación, pausas y próximas clases.</string>
+    <string name="reminders_intro">Elige tus avisos. Android puede retrasarlos por ahorro de batería; no son alarmas exactas. Hidratación y pausas esperan a que termine la clase.</string>
+    <string name="hydration_prompt">¿Es momento de tomar agua?</string>
+    <string name="break_prompt">Un momento para hacer una pausa. Aviso por tiempo; no implica inactividad detectada.</string>
+    <string name="notice_done">Realizado</string>
+    <string name="notice_snooze">Posponer 10 min</string>
+    <string name="notice_skip">Omitir</string>
+    <string name="notice_class">Próxima clase</string>
+    <string name="notice_scheduled">Programado</string>
+    <string name="notice_snoozed">Pospuesto</string>
+    <string name="notice_issued">Por atender</string>
+    <string name="notice_cancelled">Cancelado</string>
+    <string name="notice_none">Sin respuesta</string>
+    <string name="reason_none">Sin posposición</string>
+    <string name="reason_class">Clase en curso</string>
+    <string name="reason_user">Elegido por ti</string>
+    <string name="reason_silence">Días u horario de silencio</string>
+    <string name="reason_expired">Perdió vigencia</string>
+    <string name="reason_disabled">Recordatorio desactivado</string>
+    <string name="reason_settings">Configuración modificada</string>
+    <string name="reason_schedule">Clase modificada o eliminada</string>
+    <string name="reason_movement">Movimiento reciente observado</string>
+    <string name="publication_pending">Publicación pendiente</string>
+    <string name="publication_sent">Notificación publicada</string>
+    <string name="publication_blocked">Notificaciones bloqueadas; disponible en la app</string>
+    <string name="publication_none">Sin notificación publicada</string>
+    <string name="notification_enabled">Notificaciones habilitadas</string>
+    <string name="notification_enable">Habilitar notificaciones</string>
+    <string name="configuration_title">A tu ritmo</string>
+    <string name="hydration_interval">Hidratación · minutos (5–240)</string>
+    <string name="break_interval">Pausas · minutos (5–240)</string>
+    <string name="class_lead">Anticipación de clase · minutos (1–120)</string>
+    <string name="reminder_days">Días de avisos</string>
+    <string name="silence_help">Silencio compartido por todos los avisos. Inicio y fin iguales: sin silencio.</string>
+    <string name="silence_start">Silencio desde: %1$s</string>
+    <string name="silence_end">Silencio hasta: %1$s</string>
+    <string name="preferences_invalid">Revisa los intervalos, la anticipación y selecciona al menos un día.</string>
+    <string name="preferences_saved">Preferencias guardadas</string>
+    <string name="pending_title">Próximos y por atender</string>
+    <string name="pending_empty">No hay avisos pendientes.</string>
+    <string name="record_open">Ver detalle</string>
+    <string name="record_close">Cerrar</string>
+    <string name="record_unavailable">Este registro no está disponible o su formato no es compatible. Los datos guardados se conservan.</string>
+    <string name="record_summary">%1$s · %2$s\n%3$s</string>
+    <string name="origin_real">Aviso real</string>
+    <string name="origin_motion">Lectura del teléfono</string>
+    <string name="origin_simulated">Simulación</string>
+    <string name="time_missing">Sin registrar</string>
+    <string name="notice_detail">Estado: %1$s\nOrigen: %2$s\nVencimiento original: %3$s\nPróximo intento: %4$s\nEvaluado: %5$s\nNotificación: %6$s\nRespuesta: %7$s\nMotivo: %8$s\nRespuesta declarada: %9$s\n%10$s\n\nMarcar Realizado es una declaración; no demuestra el cumplimiento de un hábito.</string>
+    <string name="notice_transition">\n%1$s · %2$s · %3$s\nPróximo intento: %4$s</string>
+    <string name="class_detail">Clase: %1$s\nInicio: %2$s\n\n%3$s</string>
+    <string name="motion_detail">Lectura del teléfono · m/s²\nDesde: %1$s\nHasta: %2$s\nMuestras: %3$d\nTiempo observado: %4$d s\nPico: %5$.2f m/s²\n\nLos periodos sin datos no cuentan como reposo.</string>
+    <string name="history_title">Historial</string>
+    <string name="history_intro">Lecturas, avisos y comparaciones guardados en este teléfono.</string>
+    <string name="history_type">Tipo de registro</string>
+    <string name="history_dates">%1$s — %2$s</string>
+    <string name="history_empty">No hay registros para estos filtros.</string>
+    <string name="history_delete">Borrar registros filtrados</string>
+    <string name="history_delete_message">Se borrarán los registros cerrados de este rango y tipo. Los avisos pendientes y su programación se conservarán.</string>
+    <string name="history_delete_all">Borrar todo y desactivar recordatorios</string>
+    <string name="history_delete_all_message">Se borrará todo el historial y se cancelarán los avisos pendientes. Los recordatorios quedarán desactivados. Se conservarán el horario y la preferencia de lectura.</string>
+    <string name="history_deleted">Registros eliminados</string>
+    <string name="comparison_replay">Reproducir comparación</string>
+    <string name="comparison_saved">Las comparaciones completadas se guardan en el historial.</string>
+    <string name="home_next_notice">Próximo aviso: %1$s\n%2$s</string>
+    <string name="home_no_notice">Sin avisos pendientes</string>
+    <string name="breathing_title">Respiración</string>
+    <string name="breathing_intro">Dos minutos a tu ritmo. Inhala y exhala siguiendo la figura, sin retener el aire. Puedes pausar o detener cuando quieras.</string>
+    <string name="breathing_ready">Cuando estés listo</string>
+    <string name="breathing_inhale">Inhala</string>
+    <string name="breathing_exhale">Exhala</string>
+    <string name="breathing_paused">En pausa</string>
+    <string name="breathing_complete">Sesión terminada</string>
+    <string name="breathing_remaining">Tiempo restante: %1$s</string>
+    <string name="breathing_start">Comenzar</string>
+    <string name="breathing_pause">Pausar</string>
+    <string name="breathing_continue">Continuar</string>
+    <string name="breathing_stop">Detener</string>
+    <string-array name="history_types">
+        <item>Todos</item>
+        <item>Avisos</item>
+        <item>Movimiento</item>
+        <item>Comparaciones</item>
+    </string-array>
+</resources>

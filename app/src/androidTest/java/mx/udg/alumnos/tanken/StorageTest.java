@@ -19,6 +19,11 @@ import java.util.*;
 /** Isolated database and preference names: never alters the student's saved schedule. */
 @RunWith(AndroidJUnit4.class)
 public class StorageTest {
+    @Rule
+    public androidx.room.testing.MigrationTestHelper migration =
+            new androidx.room.testing.MigrationTestHelper(
+                    InstrumentationRegistry.getInstrumentation(), TankenDatabase.class);
+
     private Context context;
     private TankenDatabase db;
     private String databaseName, preferenceName;
@@ -44,6 +49,28 @@ public class StorageTest {
         db.close();
         context.deleteDatabase(databaseName);
         context.deleteSharedPreferences(preferenceName);
+    }
+
+    @Test
+    public void versionOneMigrationPreservesExistingSchedule() throws Exception {
+        try (androidx.sqlite.db.SupportSQLiteDatabase old =
+                migration.createDatabase(databaseName, 1)) {
+            old.execSQL(
+                    "INSERT INTO lessons (id,name,day,start,end,updatedAt) VALUES"
+                        + " ('stable','Java',1,'08:00','09:00',100)");
+            old.execSQL(
+                    "INSERT INTO notices"
+                        + " (id,kind,origin,state,reason,response,zone,createdAt,originalDue,nextAttempt,updatedAt)"
+                        + " VALUES"
+                        + " ('notice','HYDRATION','REAL','SCHEDULED','','','America/Mexico_City',100,200,200,100)");
+        }
+        try (androidx.sqlite.db.SupportSQLiteDatabase upgraded =
+                        migration.runMigrationsAndValidate(
+                                databaseName, 2, true, TankenDatabase.MIGRATION_1_2);
+                android.database.Cursor cursor = upgraded.query("SELECT id FROM lessons")) {
+            assertTrue(cursor.moveToFirst());
+            assertEquals("stable", cursor.getString(0));
+        }
     }
 
     @Test
