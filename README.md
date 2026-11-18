@@ -81,8 +81,10 @@ seleccionar uno con `--serial`. No se inicia un emulador automáticamente.
 
 ## Qué funciona actualmente
 
-- Reloj y contexto académico: clase actual, próxima clase y tiempos restantes.
-- Horario semanal: altas, edición, eliminación y cruces; persistencia Room con
+- Inicio: próxima clase de hoy, acceso para agregar horario y un aviso pendiente.
+  Respiración a un toque y herramientas plegables; el monitor concentra las lecturas.
+- Horario semanal: clases con varios días (Lu–Sá), horario y salón compartidos;
+  edición/eliminación de la clase completa y validación de cruces en todos sus días. Persistencia Room con
   importación del horario anterior sin borrar sus preferencias originales.
 - Movimiento: acelerómetro XYZ compartido mientras la app está visible; sesión
   conservada al navegar/rotar, pausa persistente y resúmenes en Room. Distingue
@@ -121,12 +123,17 @@ ViewModel/LiveData separan estado e interfaz. Room conserva hasta 30 días, con
 límites por tipo y sin eliminar avisos pendientes. La base está excluida de respaldos.
 Consultar [pendientes de integración](docs/PENDIENTES_INTEGRACION.md).
 
+El tutorial inicial presenta seis tarjetas deslizables y permite habilitar notificaciones
+con una explicación previa, o continuar sin ese permiso. Se puede omitir y repetir desde
+**Ayuda y privacidad → Repetir tutorial inicial**. Conserva la página al rotar; el
+restablecimiento de la app vuelve a mostrarlo.
+
 ## Servicios, navegación y datos
 
 Inicio, Recordatorios, Historial y Servicios usan navegación inferior. Ajustes
 permite administrar lectura y notificaciones, o restablecer la app con confirmación:
 borra horario/historial/preferencias, cancela avisos y restaura el catálogo inicial.
-Conserva los permisos concedidos por Android. Room v3 migra los datos anteriores.
+Conserva los permisos concedidos por Android. Room v4 migra los datos anteriores.
 El logo de `Logo.png` se usa en el lanzador y Acerca de.
 
 El directorio funciona sin conexión. Datos iniciales revisados el 18/11/2026 en la
@@ -141,6 +148,10 @@ Formato: `schemaVersion: 1`, `version` y entre 1 y 100 `services`; cada servicio
 
 Fases 6 y 7: 31 unitarias aprobadas; APK de aplicación e instrumentadas compilados.
 Pruebas en teléfono pendientes, incluida la migración v2→v3 y el restablecimiento.
+
+Iconografía: [Material Symbols Rounded de Google Fonts](https://fonts.google.com/icons),
+incluida como vectores locales. Licencia Apache 2.0 y atribución en
+`app/src/main/assets/licenses/`.
 
 ## Organización
 
