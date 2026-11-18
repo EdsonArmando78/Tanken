@@ -134,7 +134,7 @@ Inicio, Recordatorios, Historial y Servicios usan navegación inferior. Ajustes
 permite administrar lectura y notificaciones, o restablecer la app con confirmación:
 borra horario/historial/preferencias, cancela avisos y restaura el catálogo inicial.
 Conserva los permisos concedidos por Android. Room v4 migra los datos anteriores.
-El logo de `Logo.png` se usa en el lanzador y Acerca de.
+El lanzador y Acerca de usan el logo integrado en los recursos de la app.
 
 El directorio funciona sin conexión. Datos iniciales revisados el 18/11/2026 en la
 [Unidad de Atención para la Salud del CUCEI](https://www.cucei.udg.mx/servicios/medicos-y-clinicos).
@@ -180,3 +180,9 @@ omite los eliminados. No incluye archivos nuevos sin rastrear, como los document
 de trabajo o los scripts recién movidos hasta que se incorporen a Git. No sustituye
 el paquete final con reporte, APK y evidencias descrito en el plan. No sobrescribe
 un ZIP existente.
+
+## Licencia
+
+Tanken se distribuye bajo [BSD de 3 cláusulas](LICENSE). Los recursos de terceros
+conservan sus licencias; las de Material Symbols y Tanken se incluyen también en
+`app/src/main/assets/licenses/`.
