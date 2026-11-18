@@ -40,7 +40,10 @@ public final class AppStore {
         this.context = context;
         db =
                 Room.databaseBuilder(context, TankenDatabase.class, "tanken.db")
-                        .addMigrations(TankenDatabase.MIGRATION_1_2, TankenDatabase.MIGRATION_2_3)
+                        .addMigrations(
+                                TankenDatabase.MIGRATION_1_2,
+                                TankenDatabase.MIGRATION_2_3,
+                                TankenDatabase.MIGRATION_3_4)
                         .openHelperFactory(new PreservingOpenHelperFactory())
                         .build();
         reminders = new ReminderCoordinator(context, db);
@@ -181,25 +184,27 @@ public final class AppStore {
         android.util.Log.e("TankenStore", "Storage failed; files preserved", failure);
     }
 
-    public void saveLesson(
-            AcademicSchedule.Lesson lesson, java.util.function.Consumer<String> done) {
+    public void saveLessonGroup(
+            String groupId,
+            List<AcademicSchedule.Lesson> changes,
+            java.util.function.Consumer<String> done) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
-                        db.runInTransaction(
-                                () -> {
-                                    List<AcademicSchedule.Lesson> existing = new ArrayList<>();
-                                    for (TankenDatabase.LessonRow row : db.records().lessons())
-                                        existing.add(row.lesson());
-                                    AcademicSchedule.Lesson conflict =
-                                            ScheduleValidator.conflict(existing, lesson);
-                                    if (conflict != null)
-                                        throw new IllegalArgumentException(
-                                                context.getString(
-                                                        R.string.schedule_overlap, conflict.name));
-                                    db.records().putLesson(new TankenDatabase.LessonRow(lesson));
-                                });
+                        AcademicSchedule.Lesson conflict =
+                                ScheduleEdits.replace(db, groupId, changes);
+                        if (conflict != null) {
+                            String message =
+                                    context.getString(
+                                            R.string.schedule_overlap_day,
+                                            context.getResources()
+                                                    .getStringArray(R.array.schedule_days)[
+                                                    conflict.day.getValue() - 1],
+                                            conflict.name);
+                            main.post(() -> done.accept(message));
+                            return;
+                        }
                         refresh();
                         if (currentPreferences != null)
                             reminders.reconcile(currentPreferences, snapshot, false);
@@ -213,12 +218,12 @@ public final class AppStore {
                 });
     }
 
-    public void deleteLesson(String id) {
+    public void deleteLessonGroup(String id) {
         io.execute(
                 () -> {
                     try {
                         requireReady();
-                        db.records().deleteLesson(id);
+                        db.records().deleteLessonGroup(id);
                         refresh();
                         if (currentPreferences != null)
                             reminders.reconcile(currentPreferences, snapshot, false);
@@ -459,9 +464,8 @@ public final class AppStore {
         io.execute(
                 () -> {
                     try {
-                        catalog
-                                .bundled(); // Validate the recovery catalog before changing
-                                            // anything.
+                        // Validate the recovery catalog before changing anything.
+                        catalog.bundled();
                         db.runInTransaction(
                                 () -> {
                                     dataGeneration++;
@@ -521,7 +525,12 @@ public final class AppStore {
         reminders.cancelAlarm();
         androidx.core.app.NotificationManagerCompat.from(context).cancelAll();
         for (String file :
-                new String[] {"academic_schedule", "wellness_preferences", "TimersActivity"})
+                new String[] {
+                    "academic_schedule",
+                    "wellness_preferences",
+                    "TimersActivity",
+                    OnboardingState.PREFERENCES
+                })
             if (!context.getSharedPreferences(file, Context.MODE_PRIVATE).edit().clear().commit())
                 throw new IllegalStateException("Unable to clear preferences");
         writePreferences(WellnessPreferences.defaults());

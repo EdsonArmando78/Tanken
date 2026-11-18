@@ -44,18 +44,27 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/service_dial" />
+        android:text="@string/service_dial"
+        app:icon="@drawable/ic_ms_call"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/email"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/service_email" />
+        android:text="@string/service_email"
+        app:icon="@drawable/ic_ms_mail"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
     <com.google.android.material.button.MaterialButton
         android:id="@+id/source"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/service_source" />
+        android:text="@string/service_source"
+        app:icon="@drawable/ic_ms_open_in_new"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
   </LinearLayout>
 </androidx.core.widget.NestedScrollView>

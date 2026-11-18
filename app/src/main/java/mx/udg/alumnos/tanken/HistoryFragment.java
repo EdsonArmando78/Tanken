@@ -39,7 +39,9 @@ public final class HistoryFragment extends Fragment {
                         new MenuProvider() {
                             @Override
                             public void onCreateMenu(Menu menu, MenuInflater inflater) {
-                                inflater.inflate(R.menu.history_actions, menu);
+                                inflater.inflate(
+                                        R.menu.history_actions,
+                                        menu.findItem(R.id.openMore).getSubMenu());
                             }
 
                             @Override

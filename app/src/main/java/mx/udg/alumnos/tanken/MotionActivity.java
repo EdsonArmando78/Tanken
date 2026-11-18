@@ -50,6 +50,10 @@ public class MotionActivity extends AppCompatActivity {
                                             s.peak));
                             b.pause.setText(
                                     s.enabled ? R.string.reading_pause : R.string.reading_resume);
+                            b.pause.setIconResource(
+                                    s.enabled
+                                            ? R.drawable.ic_ms_pause
+                                            : R.drawable.ic_ms_play_arrow);
                             b.pause.setOnClickListener(v -> model.setReading(!s.enabled));
                         });
         model.error()

@@ -2,12 +2,10 @@
 <resources>
     <string name="app_name">Tanken</string>
     <string name="app_icon_description">Icono de Tanken</string>
-    <string name="open_schedule">Mis horarios académicos</string>
     <string name="open_about">Acerca de Tanken</string>
     <string name="schedule_title">Horarios académicos · Semanales</string>
     <string name="schedule_add">Agregar clase</string>
     <string name="schedule_empty">No hay horarios registrados. Agrega tu primera clase.</string>
-    <string name="schedule_row">%1$s\n%2$s · %3$s–%4$s</string>
     <string name="schedule_delete_title">¿Eliminar %1$s?</string>
     <string name="schedule_cancel">Cancelar</string>
     <string name="schedule_delete">Eliminar</string>
@@ -15,7 +13,6 @@
     <string name="schedule_name_hint">Nombre de la materia</string>
     <string name="schedule_start">Inicio: %1$s</string>
     <string name="schedule_end">Fin: %1$s</string>
-    <string name="schedule_overlap">El horario se cruza con %1$s</string>
     <string-array name="schedule_days">
         <item>Lunes</item>
         <item>Martes</item>
@@ -25,4 +22,17 @@
         <item>Sábado</item>
         <item>Domingo</item>
     </string-array>
+    <string name="schedule_mon_short">Lu</string>
+    <string name="schedule_tue_short">Ma</string>
+    <string name="schedule_wed_short">Mi</string>
+    <string name="schedule_thu_short">Ju</string>
+    <string name="schedule_fri_short">Vi</string>
+    <string name="schedule_sat_short">Sá</string>
+    <string name="schedule_day_required">Selecciona al menos un día de lunes a sábado para guardar la clase.</string>
+    <string name="schedule_days_label">Días de clase · selecciona uno o varios</string>
+    <string name="schedule_room_hint">Salón (opcional)</string>
+    <string name="schedule_room">Salón: %1$s</string>
+    <string name="schedule_group_time">%1$s · %2$s–%3$s</string>
+    <string name="schedule_overlap_day">El horario del %1$s se cruza con %2$s</string>
+    <string name="schedule_delete_group">Se eliminarán todos los días guardados de esta clase.</string>
 </resources>

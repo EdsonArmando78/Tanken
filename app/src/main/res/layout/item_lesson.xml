@@ -1,6 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/Tanken.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -22,6 +23,9 @@
             android:text="@string/schedule_loading"
             android:textAppearance="@style/Tanken.Body"
             android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/room" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textAppearance="@style/Tanken.Body" android:layout_marginBottom="12dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -32,7 +36,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:minHeight="48dp"
-                android:text="@string/schedule_edit" />
+                android:text="@string/schedule_edit"
+        app:icon="@drawable/ic_ms_edit"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/delete"
                 style="@style/Widget.Material3.Button.TextButton"
@@ -40,7 +47,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:minHeight="48dp"
-                android:text="@string/schedule_delete" />
+                android:text="@string/schedule_delete"
+        app:icon="@drawable/ic_ms_delete"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -1,6 +1,7 @@
 package mx.udg.alumnos.tanken;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -17,6 +18,7 @@ public final class TimersActivity extends AppCompatActivity {
     private ActivityTimersBinding b;
     private ClassTimersViewModel model;
     private List<AcademicSchedule.Lesson> lessons;
+    private long durationSeconds = 60;
     private final NotificationAccess permission =
             new NotificationAccess(this, () -> this, this::updateNotificationStatus);
 
@@ -31,6 +33,24 @@ public final class TimersActivity extends AppCompatActivity {
         b.toolbar.setNavigationOnClickListener(v -> finish());
         b.nextClass.setOnClickListener(v -> useNextClass());
         b.start.setOnClickListener(v -> addTimer());
+        durationSeconds = saved == null ? 60 : saved.getLong("durationSeconds", 60);
+        updateDuration();
+        b.duration.setOnClickListener(
+                v -> {
+                    if (getSupportFragmentManager().isStateSaved()
+                            || getSupportFragmentManager().findFragmentByTag("duration") != null)
+                        return;
+                    TimerDurationDialog.create(durationSeconds)
+                            .show(getSupportFragmentManager(), "duration");
+                });
+        getSupportFragmentManager()
+                .setFragmentResultListener(
+                        TimerDurationDialog.RESULT,
+                        this,
+                        (key, result) -> {
+                            durationSeconds = result.getLong("seconds");
+                            updateDuration();
+                        });
         b.permission.setOnClickListener(v -> permission.requestOrSettings());
         b.clear.setOnClickListener(v -> model.clearHistory());
         TimerAdapter adapter = new TimerAdapter(model::cancel);
@@ -42,10 +62,15 @@ public final class TimersActivity extends AppCompatActivity {
                         rows -> {
                             adapter.submitList(rows);
                             int active = 0, waiting = 0;
+                            boolean clearable = false;
                             for (ClassTimersViewModel.Row row : rows) {
                                 if (row.status == ClassTimersViewModel.Status.RUNNING) active++;
                                 if (row.status == ClassTimersViewModel.Status.WAITING) waiting++;
+                                if (row.status == ClassTimersViewModel.Status.FINISHED
+                                        || row.status == ClassTimersViewModel.Status.CANCELLED)
+                                    clearable = true;
                             }
+                            b.clear.setVisibility(clearable ? View.VISIBLE : View.GONE);
                             b.summary.setText(
                                     rows.isEmpty()
                                             ? getString(R.string.timer_empty)
@@ -55,11 +80,17 @@ public final class TimersActivity extends AppCompatActivity {
     }
 
     private void updateNotificationStatus() {
-        if (b != null)
-            b.notifications.setText(
-                    NotificationAccess.enabled(this, "class_timers")
-                            ? R.string.timer_notifications_enabled
-                            : R.string.timer_notifications_disabled);
+        if (b == null) return;
+        boolean enabled = NotificationAccess.enabled(this, "class_timers");
+        b.notifications.setVisibility(enabled ? View.GONE : View.VISIBLE);
+        b.permission.setVisibility(enabled ? View.GONE : View.VISIBLE);
+    }
+
+    private void updateDuration() {
+        b.duration.setText(
+                getString(
+                        R.string.timer_duration_selected,
+                        TimerDuration.label(this, durationSeconds)));
     }
 
     @Override
@@ -69,18 +100,15 @@ public final class TimersActivity extends AppCompatActivity {
     }
 
     private void addTimer() {
+        if (b.timerName.getText().toString().trim().isEmpty()) {
+            b.timerNameLayout.setError(getString(R.string.timer_invalid_name));
+            return;
+        }
+        b.timerNameLayout.setError(null);
         try {
-            model.add(
-                    b.timerName.getText().toString(),
-                    Long.parseLong(b.timerSeconds.getText().toString().trim()));
-            b.timerNameLayout.setError(null);
-            b.timerSecondsLayout.setError(null);
-        } catch (NumberFormatException e) {
-            b.timerSecondsLayout.setError(getString(R.string.timer_invalid_duration));
-        } catch (IllegalArgumentException e) {
-            if (b.timerName.getText().toString().trim().isEmpty())
-                b.timerNameLayout.setError(getString(R.string.timer_invalid_name));
-            else b.timerSecondsLayout.setError(e.getMessage());
+            model.add(b.timerName.getText().toString(), durationSeconds);
+        } catch (IllegalArgumentException invalid) {
+            Toast.makeText(this, invalid.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -113,6 +141,12 @@ public final class TimersActivity extends AppCompatActivity {
             return;
         }
         model.add(getString(R.string.timer_class_name, next.lesson.name), Math.max(1, duration));
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle saved) {
+        saved.putLong("durationSeconds", durationSeconds);
+        super.onSaveInstanceState(saved);
     }
 
     @Override

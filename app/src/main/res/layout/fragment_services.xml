@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -39,7 +40,10 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/catalog_import_title" />
+        android:text="@string/catalog_import_title"
+        app:icon="@drawable/ic_ms_upload_file"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
   <com.google.android.material.textview.MaterialTextView
         android:id="@+id/empty"
         android:layout_width="match_parent"

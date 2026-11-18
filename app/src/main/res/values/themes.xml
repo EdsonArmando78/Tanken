@@ -8,5 +8,7 @@
         <item name="colorSecondaryContainer">#CCE8E1</item>
         <item name="colorOnSecondaryContainer">#07201C</item>
     </style>
-    <style name="Theme.Tanken" parent="Base.Theme.Tanken" />
+    <style name="Theme.Tanken" parent="Base.Theme.Tanken">
+        <item name="textInputStyle">@style/Tanken.TextField</item>
+    </style>
 </resources>

@@ -19,6 +19,7 @@
             app:title="@string/reading_intro"
             app:titleTextAppearance="@style/Tanken.Section"
             app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
             app:navigationContentDescription="@string/back" />
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/source"
@@ -135,13 +136,19 @@
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/reading_pause" />
+            android:text="@string/reading_pause"
+        app:icon="@drawable/ic_ms_pause"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/reset"
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/motion_reset" />
+            android:text="@string/motion_reset"
+        app:icon="@drawable/ic_ms_restart_alt"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/help"
             android:layout_width="match_parent"

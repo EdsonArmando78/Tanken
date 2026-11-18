@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item name="timerName" type="id" />
-    <item name="timerSeconds" type="id" />
 </resources>

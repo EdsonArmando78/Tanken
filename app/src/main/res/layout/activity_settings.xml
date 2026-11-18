@@ -53,7 +53,10 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/reminders_title" />
+        android:text="@string/reminders_title"
+        app:icon="@drawable/ic_nav_reminders"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
@@ -84,19 +87,28 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notification_enable" />
+        android:text="@string/notification_enable"
+        app:icon="@drawable/ic_nav_reminders"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
         android:id="@+id/reminderChannel"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings_reminder_channel" />
+        android:text="@string/settings_reminder_channel"
+        app:icon="@drawable/ic_nav_reminders"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
         android:id="@+id/timerChannel"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/settings_timer_channel" />
+        android:text="@string/settings_timer_channel"
+        app:icon="@drawable/ic_timer_notification"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
@@ -120,13 +132,19 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/history_title" />
+        android:text="@string/history_title"
+        app:icon="@drawable/ic_nav_history"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
         android:id="@+id/reset"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/reset_title" />
+        android:text="@string/reset_title"
+        app:icon="@drawable/ic_ms_restart_alt"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.textview.MaterialTextView
@@ -141,6 +159,9 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/help_title" />
+        android:text="@string/help_title"
+        app:icon="@drawable/ic_ms_help"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
   </LinearLayout>
 </androidx.core.widget.NestedScrollView>

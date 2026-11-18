@@ -28,11 +28,11 @@
             android:textAppearance="@style/Tanken.Body"
             android:layout_marginBottom="12dp" />
         <com.google.android.material.textfield.TextInputLayout
+        style="@style/Tanken.TextField"
             android:id="@+id/wellnessIntervalLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/wellness_interval"
-            android:layout_marginBottom="12dp">
+            android:hint="@string/wellness_interval">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/wellnessInterval"
                 android:layout_width="match_parent"
@@ -53,13 +53,19 @@
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/wellness_start" />
+            android:text="@string/wellness_start"
+        app:icon="@drawable/ic_ms_science"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/wellnessCancel"
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/wellness_cancel" />
+            android:text="@string/wellness_cancel"
+        app:icon="@drawable/ic_ms_close"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.progressindicator.LinearProgressIndicator
             android:id="@+id/wellnessProgress"
             android:layout_width="match_parent"

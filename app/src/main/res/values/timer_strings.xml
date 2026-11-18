@@ -1,21 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="timers_title">Temporizadores de clase</string>
-    <string name="timers_help">Crea avisos para una clase, un descanso o una actividad. Hasta 4 activos; los demás esperan su turno. Al volver al reloj se cancelan. No son alarmas exactas con la app cerrada.</string>
+    <string name="timers_help">Crea avisos para una clase, un descanso o una actividad. Hasta 4 activos; los demás esperan su turno. Al cerrar esta pantalla se cancelan. No son alarmas exactas con la app cerrada.</string>
     <string name="timer_name_hint">Nombre del aviso</string>
-    <string name="timer_duration_label">Duración en segundos (1–86400)</string>
-    <string name="timer_default_duration" translatable="false">60</string>
+    <string name="timer_duration_label">Duración del temporizador</string>
     <string name="timer_next_class">Iniciar aviso para la próxima clase</string>
     <string name="timer_start">Iniciar temporizador</string>
     <string name="timer_enable_notifications">Activar notificaciones</string>
     <string name="timer_clear_history">Limpiar finalizados y cancelados</string>
-    <string name="timer_notifications_enabled">Notificaciones activadas.</string>
     <string name="timer_notifications_disabled">Notificaciones desactivadas: verás el resultado en esta pantalla. Puedes activarlas con el botón.</string>
-    <string name="timer_invalid_input">Escribe un nombre y una duración de 1 a 86400 segundos.</string>
-    <string name="timer_invalid_duration">Escribe un número entero de 1 a 86400.</string>
+    <string name="timer_invalid_input">Escribe un nombre y elige una duración entre 1 segundo y 24 horas.</string>
     <string name="timer_invalid_name">Escribe el nombre del aviso.</string>
     <string name="timer_no_free_worker">Cancela un temporizador para iniciar el aviso de clase a tiempo.</string>
-    <string name="timer_no_classes">Primero registra una clase en Mis horarios académicos.</string>
+    <string name="timer_no_classes">Primero agrega una clase en tu horario.</string>
     <string name="timer_class_too_far">La próxima clase está a más de 24 horas. Crea el aviso más cerca del inicio.</string>
     <string name="timer_class_name">Inicio de %1$s</string>
     <string name="timer_cancel">Cancelar aviso #%1$d</string>
@@ -28,4 +25,17 @@
     <string name="timer_summary">%1$d/4 activos · %2$d en espera</string>
     <string name="timer_channel_name">Avisos de clase</string>
     <string name="timer_channel_description">Avisos al terminar los temporizadores de Tanken</string>
+    <string name="timer_duration_selected">Duración: %1$s</string>
+    <string name="timer_duration_help">Elige horas, minutos y segundos. Desde 1 segundo hasta 24 horas.</string>
+    <string name="timer_duration_apply">Usar duración</string>
+    <string name="timer_hours_hint">Horas</string>
+    <string name="timer_minutes_hint">Min</string>
+    <string name="timer_seconds_hint">Seg</string>
+    <string name="timer_preset_five">5 min</string>
+    <string name="timer_preset_fifteen">15 min</string>
+    <string name="timer_preset_thirty">30 min</string>
+    <string name="timer_preset_hour">1 hora</string>
+    <plurals name="timer_hours"><item quantity="one">%d hora</item><item quantity="other">%d horas</item></plurals>
+    <plurals name="timer_minutes"><item quantity="one">%d minuto</item><item quantity="other">%d minutos</item></plurals>
+    <plurals name="timer_seconds"><item quantity="one">%d segundo</item><item quantity="other">%d segundos</item></plurals>
 </resources>

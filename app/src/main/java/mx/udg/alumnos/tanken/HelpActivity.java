@@ -1,5 +1,6 @@
 package mx.udg.alumnos.tanken;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +19,11 @@ public final class HelpActivity extends AppCompatActivity {
         setContentView(b.getRoot());
         ProductUi.insets(b.getRoot());
         b.toolbar.setNavigationOnClickListener(v -> finish());
+        b.replayTutorial.setOnClickListener(
+                v ->
+                        startActivity(
+                                new Intent(this, OnboardingActivity.class)
+                                        .putExtra(OnboardingActivity.REPLAY, true)));
     }
 
     @Override

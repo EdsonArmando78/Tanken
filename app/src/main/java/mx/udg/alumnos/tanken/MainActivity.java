@@ -17,6 +17,7 @@ public final class MainActivity extends AppCompatActivity {
     private ActivityMainBinding b;
     private NavController navigation;
     private AppBarConfiguration appBar;
+    private boolean welcomeLaunched;
 
     public static Intent destination(Context context, String tab) {
         return new Intent(context, MainActivity.class)
@@ -61,6 +62,11 @@ public final class MainActivity extends AppCompatActivity {
                     return insets;
                 });
         if (saved == null) route(getIntent());
+        welcomeLaunched = saved != null && saved.getBoolean("welcomeLaunched", false);
+        if (!OnboardingState.completed(this) && !welcomeLaunched) {
+            welcomeLaunched = true;
+            startActivity(new Intent(this, OnboardingActivity.class));
+        }
     }
 
     public void select(int destination) {
@@ -114,6 +120,12 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     public boolean onSupportNavigateUp() {
         return NavigationUI.navigateUp(navigation, appBar) || super.onSupportNavigateUp();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle saved) {
+        saved.putBoolean("welcomeLaunched", welcomeLaunched);
+        super.onSaveInstanceState(saved);
     }
 
     @Override

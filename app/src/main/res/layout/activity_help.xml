@@ -19,6 +19,11 @@
         app:navigationIcon="@drawable/ic_back"
         app:navigationIconTint="?attr/colorOnSurface"
         app:navigationContentDescription="@string/back" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/replayTutorial" style="@style/Tanken.Button"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:text="@string/welcome_replay" app:icon="@drawable/ic_ms_play_arrow"
+        app:iconGravity="textStart" app:iconSize="20dp" />
     <com.google.android.material.card.MaterialCardView
         style="@style/Tanken.Card"
         android:layout_width="match_parent"
@@ -34,7 +39,11 @@
         android:layout_height="wrap_content"
         android:text="@string/help_start_title"
         android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_ms_calendar_month"
+        app:drawableTint="?attr/colorPrimary" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/body0"
         android:layout_width="match_parent"
@@ -59,7 +68,11 @@
         android:layout_height="wrap_content"
         android:text="@string/help_reading_title"
         android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_ms_sensors"
+        app:drawableTint="?attr/colorPrimary" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/body1"
         android:layout_width="match_parent"
@@ -84,7 +97,11 @@
         android:layout_height="wrap_content"
         android:text="@string/help_notices_title"
         android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_nav_reminders"
+        app:drawableTint="?attr/colorPrimary" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/body2"
         android:layout_width="match_parent"
@@ -109,7 +126,11 @@
         android:layout_height="wrap_content"
         android:text="@string/help_catalog_title"
         android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_nav_services"
+        app:drawableTint="?attr/colorPrimary" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/body3"
         android:layout_width="match_parent"
@@ -134,7 +155,11 @@
         android:layout_height="wrap_content"
         android:text="@string/help_data_title"
         android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
+        android:layout_marginBottom="12dp"
+        android:gravity="center_vertical"
+        android:drawablePadding="12dp"
+        app:drawableStartCompat="@drawable/ic_ms_delete_forever"
+        app:drawableTint="?attr/colorPrimary" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/body4"
         android:layout_width="match_parent"

@@ -203,7 +203,7 @@ public class StorageTest {
                 migration.createDatabase(databaseName, 2)) {
             old.execSQL(
                     "INSERT INTO lessons (id,name,day,start,end,updatedAt) VALUES"
-                        + " ('stable','Java',1,'08:00','09:00',100)");
+                            + " ('stable','Java',1,'08:00','09:00',100)");
         }
         try (androidx.sqlite.db.SupportSQLiteDatabase upgraded =
                         migration.runMigrationsAndValidate(
@@ -288,5 +288,63 @@ public class StorageTest {
         assertEquals("1", db.records().metadata("remindersDisabled"));
         assertEquals("2", db.records().metadata("dataGeneration"));
         assertEquals("1000", db.records().metadata("historyClearedAt"));
+    }
+
+    @Test
+    public void versionThreeMigrationPreservesClassesAsIndependentGroups() throws Exception {
+        try (androidx.sqlite.db.SupportSQLiteDatabase old =
+                migration.createDatabase(databaseName, 3)) {
+            old.execSQL(
+                    "INSERT INTO lessons (id,name,day,start,end,updatedAt) VALUES"
+                        + " ('stable','Java',1,'08:00','09:00',100)");
+        }
+        try (androidx.sqlite.db.SupportSQLiteDatabase upgraded =
+                        migration.runMigrationsAndValidate(
+                                databaseName, 4, true, TankenDatabase.MIGRATION_3_4);
+                android.database.Cursor cursor =
+                        upgraded.query("SELECT id,groupId,room FROM lessons")) {
+            assertTrue(cursor.moveToFirst());
+            assertEquals("stable", cursor.getString(0));
+            assertEquals("stable", cursor.getString(1));
+            assertEquals("", cursor.getString(2));
+        }
+    }
+
+    private AcademicSchedule.Lesson occurrence(
+            String id, String group, DayOfWeek day, String room) {
+        return new AcademicSchedule.Lesson(
+                id, "Java", day, LocalTime.of(8, 0), LocalTime.of(9, 0), group, room);
+    }
+
+    @Test
+    public void multiDayEditIsAtomicAndPreservesRetainedIdsAndOtherClasses() {
+        AcademicSchedule.Lesson monday = occurrence("mon", "java", DayOfWeek.MONDAY, "D-101");
+        AcademicSchedule.Lesson blocker =
+                occurrence("other", "other", DayOfWeek.WEDNESDAY, "D-102");
+        db.records().putLesson(new TankenDatabase.LessonRow(monday));
+        db.records().putLesson(new TankenDatabase.LessonRow(blocker));
+        List<AcademicSchedule.Lesson> changes =
+                Arrays.asList(
+                        occurrence("mon", "java", DayOfWeek.MONDAY, "D-103"),
+                        occurrence("wed", "java", DayOfWeek.WEDNESDAY, "D-103"));
+        assertNotNull(ScheduleEdits.replace(db, "java", changes));
+        assertEquals(2, db.records().lessons().size());
+        assertEquals("D-101", db.records().lessons().get(0).room);
+        db.records().deleteLessonGroup("other");
+        assertNull(ScheduleEdits.replace(db, "java", changes));
+        assertEquals(2, db.records().lessons().size());
+        assertEquals("mon", db.records().lessons().get(0).id);
+        assertEquals("D-103", db.records().lessons().get(0).room);
+        assertEquals("D-103", db.records().lessons().get(1).room);
+        assertNull(ScheduleEdits.replace(db, "java", Collections.singletonList(changes.get(1))));
+        assertEquals(1, db.records().lessons().size());
+        assertEquals("wed", db.records().lessons().get(0).id);
+        db.records().putLesson(new TankenDatabase.LessonRow(monday));
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> ScheduleEdits.replace(db, "java", Collections.emptyList()));
+        assertEquals(2, db.records().lessons().size());
+        db.records().deleteLessonGroup("java");
+        assertTrue(db.records().lessons().isEmpty());
     }
 }

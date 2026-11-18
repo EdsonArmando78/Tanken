@@ -39,7 +39,7 @@
     <string name="reset_message">Se borrarán el horario, el historial y las preferencias, se cancelarán todos los avisos y se restaurará el catálogo incluido.\n\nDespués se aplicará la configuración inicial y la lectura volverá a activarse mientras uses la app. Los permisos concedidos por Android no se revocan.</string>
     <string name="help_title">Ayuda y privacidad</string>
     <string name="help_start_title">Tu jornada</string>
-    <string name="help_start">En Inicio puedes ver tu clase actual y la siguiente, abrir el horario, revisar movimiento o iniciar respiración. Recordatorios, Historial y Servicios tienen su propia pestaña.</string>
+    <string name="help_start">Inicio muestra tu próxima clase y los avisos pendientes. Puedes abrir tu horario o iniciar respiración; Herramientas despliega temporizadores, movimiento y simulador. Recordatorios, Historial y Servicios tienen su propia pestaña.</string>
     <string name="help_reading_title">Lecturas y datos</string>
     <string name="help_reading">El acelerómetro se lee solo mientras Tanken está visible. Puedes pausar la lectura en Movimiento o Ajustes. Una lectura ausente o antigua no significa reposo. Los indicadores son aproximados y no son diagnósticos.</string>
     <string name="help_notices_title">Avisos a tu ritmo</string>
@@ -53,4 +53,5 @@
     <string name="about_project">Tanken · 探検\nProyecto integrador de Programación Paralela y en Tiempo Real\nIngeniería en Computación · CUCEI, Universidad de Guadalajara</string>
     <string name="about_authors">Edson Armando Álvarez Cortés\nLeobardo Preciado Gómez</string>
     <string name="about_purpose">Organización de la jornada y apoyo al bienestar estudiantil, con procesamiento local y sin diagnósticos.</string>
+    <string name="more_options">Más opciones</string>
 </resources>

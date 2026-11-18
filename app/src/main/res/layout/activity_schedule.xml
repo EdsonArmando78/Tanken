@@ -15,6 +15,7 @@
         app:title="@string/schedule_heading"
         app:titleTextAppearance="@style/Tanken.Section"
         app:navigationIcon="@drawable/ic_back"
+        app:navigationIconTint="?attr/colorOnSurface"
         app:navigationContentDescription="@string/back" />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/help"
@@ -35,7 +36,10 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/schedule_add" />
+        android:text="@string/schedule_add"
+        app:icon="@drawable/ic_ms_add"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/empty"
         android:layout_width="match_parent"

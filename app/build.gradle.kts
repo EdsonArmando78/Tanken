@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.viewpager2)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
     implementation(libs.room.runtime)

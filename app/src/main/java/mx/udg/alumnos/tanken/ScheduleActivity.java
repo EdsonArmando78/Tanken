@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.timepicker.*;
 
 import mx.udg.alumnos.tanken.databinding.*;
 
@@ -20,6 +19,7 @@ public class ScheduleActivity extends AppCompatActivity {
     private DialogLessonBinding form;
     private AlertDialog dialog;
     private ScheduleViewModel model;
+    private boolean addOnLoad;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -29,16 +29,21 @@ public class ScheduleActivity extends AppCompatActivity {
         setContentView(b.getRoot());
         ProductUi.insets(b.getRoot());
         model = new ViewModelProvider(this).get(ScheduleViewModel.class);
+        addOnLoad =
+                state == null
+                        ? getIntent().getBooleanExtra("addLesson", false)
+                        : state.getBoolean("addOnLoad", false);
         LessonAdapter adapter =
                 new LessonAdapter(
                         model::edit,
                         l ->
                                 new MaterialAlertDialogBuilder(this)
                                         .setTitle(getString(R.string.schedule_delete_title, l.name))
+                                        .setMessage(R.string.schedule_delete_group)
                                         .setNegativeButton(R.string.schedule_cancel, null)
                                         .setPositiveButton(
                                                 R.string.schedule_delete,
-                                                (d, w) -> model.delete(l.id))
+                                                (d, w) -> model.delete(l.groupId))
                                         .show());
         b.lessons.setLayoutManager(new LinearLayoutManager(this));
         b.lessons.setAdapter(adapter);
@@ -49,10 +54,14 @@ public class ScheduleActivity extends AppCompatActivity {
                 .observe(
                         this,
                         list -> {
-                            adapter.submitList(list);
+                            adapter.submitList(LessonGroup.from(list));
                             b.empty.setText(R.string.schedule_empty);
                             b.empty.setVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
                             b.add.setEnabled(true);
+                            if (addOnLoad) {
+                                addOnLoad = false;
+                                model.edit(null);
+                            }
                         });
         model.error()
                 .observe(
@@ -80,17 +89,34 @@ public class ScheduleActivity extends AppCompatActivity {
                             }
                         });
         model.busy().observe(this, value -> updateBusy(value));
-        attachPicker(
-                (MaterialTimePicker) getSupportFragmentManager().findFragmentByTag("lessonStart"),
-                true);
-        attachPicker(
-                (MaterialTimePicker) getSupportFragmentManager().findFragmentByTag("lessonEnd"),
-                false);
+        getSupportFragmentManager()
+                .setFragmentResultListener(
+                        LessonTimePicker.RESULT,
+                        this,
+                        (key, result) -> {
+                            model.time(
+                                    result.getBoolean("start"),
+                                    LocalTime.of(result.getInt("hour"), result.getInt("minute"))
+                                            .toString());
+                            updateTimes();
+                        });
     }
 
     private void showEditor() {
         form = DialogLessonBinding.inflate(getLayoutInflater());
         form.name.setText(model.name());
+        form.room.setText(model.room());
+        form.room.addTextChangedListener(
+                new android.text.TextWatcher() {
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        model.room(s.toString());
+                    }
+
+                    public void afterTextChanged(android.text.Editable value) {}
+                });
         form.name.addTextChangedListener(
                 new android.text.TextWatcher() {
                     public void beforeTextChanged(CharSequence s, int a, int c, int f) {}
@@ -101,10 +127,24 @@ public class ScheduleActivity extends AppCompatActivity {
 
                     public void afterTextChanged(android.text.Editable e) {}
                 });
-        String[] days = getResources().getStringArray(R.array.schedule_days);
-        form.day.setSimpleItems(days);
-        form.day.setText(days[model.day() - 1], false);
-        form.day.setOnItemClickListener((p, v, pos, id) -> model.day(pos + 1));
+        String[] labels = getResources().getStringArray(R.array.schedule_days);
+        for (int i = 0; i < form.days.getChildCount(); i++) {
+            View button = form.days.getChildAt(i);
+            button.setContentDescription(labels[i]);
+            // The ViewModel owns the draft, including after rotation.
+            button.setSaveEnabled(false);
+        }
+        form.days.setSaveEnabled(false);
+        for (int i = 0; i < form.days.getChildCount(); i++)
+            if ((model.days() & (1 << i)) != 0) form.days.check(form.days.getChildAt(i).getId());
+        form.dayHint.setVisibility((model.days() & ~63) != 0 ? View.VISIBLE : View.GONE);
+        form.days.addOnButtonCheckedListener(
+                (group, checkedId, checked) -> {
+                    for (int i = 0; i < group.getChildCount(); i++)
+                        if (group.getChildAt(i).getId() == checkedId)
+                            model.selectedDay(i + 1, checked);
+                    form.dayHint.setVisibility(View.GONE);
+                });
         updateTimes();
         form.start.setOnClickListener(v -> pick(true));
         form.end.setOnClickListener(v -> pick(false));
@@ -141,7 +181,9 @@ public class ScheduleActivity extends AppCompatActivity {
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(!busy);
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setEnabled(!busy);
         form.name.setEnabled(!busy);
-        form.day.setEnabled(!busy);
+        form.room.setEnabled(!busy);
+        for (int i = 0; i < form.days.getChildCount(); i++)
+            form.days.getChildAt(i).setEnabled(!busy);
         form.start.setEnabled(!busy);
         form.end.setEnabled(!busy);
     }
@@ -154,28 +196,16 @@ public class ScheduleActivity extends AppCompatActivity {
     }
 
     private void pick(boolean start) {
-        LocalTime time = LocalTime.parse(model.time(start));
-        MaterialTimePicker picker =
-                new MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_24H)
-                        .setHour(time.getHour())
-                        .setMinute(time.getMinute())
-                        .setTitleText(
-                                start ? R.string.schedule_start_label : R.string.schedule_end_label)
-                        .build();
-        attachPicker(picker, start);
-        picker.show(getSupportFragmentManager(), start ? "lessonStart" : "lessonEnd");
+        String tag = start ? "lessonStart" : "lessonEnd";
+        if (getSupportFragmentManager().isStateSaved()
+                || getSupportFragmentManager().findFragmentByTag(tag) != null) return;
+        LessonTimePicker.create(start, model.time(start)).show(getSupportFragmentManager(), tag);
     }
 
-    private void attachPicker(MaterialTimePicker picker, boolean start) {
-        if (picker == null) return;
-        picker.clearOnPositiveButtonClickListeners();
-        picker.addOnPositiveButtonClickListener(
-                v -> {
-                    model.time(
-                            start, LocalTime.of(picker.getHour(), picker.getMinute()).toString());
-                    updateTimes();
-                });
+    @Override
+    protected void onSaveInstanceState(Bundle state) {
+        state.putBoolean("addOnLoad", addOnLoad);
+        super.onSaveInstanceState(state);
     }
 
     @Override

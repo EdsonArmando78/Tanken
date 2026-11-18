@@ -57,6 +57,8 @@ public class ProductRotationTest {
                         model.edit(null);
                         model.name("Draft");
                         model.day(3);
+                        model.selectedDay(1, true);
+                        model.room("D-101");
                         model.time(true, "10:30");
                         motion.set(((TankenApplication) activity.getApplication()).motion());
                     });
@@ -68,6 +70,8 @@ public class ProductRotationTest {
                         assertSame(original.get(), model);
                         assertEquals("Draft", model.name());
                         assertEquals(3, model.day());
+                        assertEquals(5, model.days());
+                        assertEquals("D-101", model.room());
                         assertEquals("10:30", model.time(true));
                         assertSame(
                                 motion.get(),

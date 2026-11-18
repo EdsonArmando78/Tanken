@@ -54,7 +54,7 @@ final class ReminderNotifications {
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder notification =
                 new NotificationCompat.Builder(c, CHANNEL)
-                        .setSmallIcon(R.drawable.ic_timer_notification)
+                        .setSmallIcon(R.drawable.ic_nav_reminders)
                         .setContentTitle(RecordText.kind(c, row.kind))
                         .setContentText(
                                 row.kind.equals("CLASS")
@@ -69,10 +69,17 @@ final class ReminderNotifications {
                         .setAutoCancel(false)
                         .setCategory(NotificationCompat.CATEGORY_REMINDER)
                         .addAction(
-                                0, c.getString(R.string.notice_done), action(c, row, "COMPLETED"))
+                                R.drawable.ic_ms_done,
+                                c.getString(R.string.notice_done),
+                                action(c, row, "COMPLETED"))
                         .addAction(
-                                0, c.getString(R.string.notice_snooze), action(c, row, "SNOOZED"))
-                        .addAction(0, c.getString(R.string.notice_skip), action(c, row, "SKIPPED"));
+                                R.drawable.ic_ms_snooze,
+                                c.getString(R.string.notice_snooze),
+                                action(c, row, "SNOOZED"))
+                        .addAction(
+                                R.drawable.ic_ms_skip_next,
+                                c.getString(R.string.notice_skip),
+                                action(c, row, "SKIPPED"));
         try {
             NotificationManagerCompat.from(c).notify("wellness:" + row.id, 0, notification.build());
             return "PUBLISHED";

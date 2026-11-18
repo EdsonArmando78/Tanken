@@ -12,6 +12,7 @@ public final class AcademicSchedule {
     public static final class Lesson {
         public final String id;
         public final String name;
+        public final String groupId, room;
         public final DayOfWeek day;
         public final LocalTime start, end;
 
@@ -20,6 +21,17 @@ public final class AcademicSchedule {
         }
 
         public Lesson(String id, String name, DayOfWeek day, LocalTime start, LocalTime end) {
+            this(id, name, day, start, end, id, "");
+        }
+
+        public Lesson(
+                String id,
+                String name,
+                DayOfWeek day,
+                LocalTime start,
+                LocalTime end,
+                String groupId,
+                String room) {
             if (name == null
                     || name.trim().isEmpty()
                     || day == null
@@ -30,6 +42,11 @@ public final class AcademicSchedule {
                         "La clase debe tener nombre y terminar después de iniciar.");
             }
             if (id == null || id.isEmpty()) throw new IllegalArgumentException("Missing lesson ID");
+            if (groupId == null || groupId.isEmpty())
+                throw new IllegalArgumentException("Missing lesson group");
+            this.groupId = groupId;
+            this.room = room == null ? "" : room.trim();
+            if (this.room.length() > 80) throw new IllegalArgumentException("Room too long");
             this.id = id;
             this.name = name.trim();
             this.day = day;

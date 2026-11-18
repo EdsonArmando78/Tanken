@@ -37,7 +37,10 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/notification_enable" />
+        android:text="@string/notification_enable"
+        app:icon="@drawable/ic_nav_reminders"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
     <com.google.android.material.card.MaterialCardView
         style="@style/Tanken.Card"
         android:layout_width="match_parent"
@@ -61,11 +64,11 @@
         android:minHeight="48dp"
         android:text="@string/wellness_hydration" />
         <com.google.android.material.textfield.TextInputLayout
+        style="@style/Tanken.TextField"
         android:id="@+id/hydrationMinutesLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/hydration_interval"
-        android:layout_marginBottom="12dp">
+        android:hint="@string/hydration_interval">
           <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/hydrationMinutes"
         android:layout_width="match_parent"
@@ -82,11 +85,11 @@
         android:minHeight="48dp"
         android:text="@string/wellness_break" />
         <com.google.android.material.textfield.TextInputLayout
+        style="@style/Tanken.TextField"
         android:id="@+id/breakMinutesLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/break_interval"
-        android:layout_marginBottom="12dp">
+        android:hint="@string/break_interval">
           <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/breakMinutes"
         android:layout_width="match_parent"
@@ -103,11 +106,11 @@
         android:minHeight="48dp"
         android:text="@string/notice_class" />
         <com.google.android.material.textfield.TextInputLayout
+        style="@style/Tanken.TextField"
         android:id="@+id/classLeadLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/class_lead"
-        android:layout_marginBottom="12dp">
+        android:hint="@string/class_lead">
           <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/classLead"
         android:layout_width="match_parent"
@@ -141,13 +144,19 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/silence_start" />
+        android:text="@string/silence_start"
+        app:icon="@drawable/ic_ms_bedtime"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
         android:id="@+id/silenceEnd"
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/silence_end" />
+        android:text="@string/silence_end"
+        app:icon="@drawable/ic_ms_bedtime"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.textview.MaterialTextView
         android:id="@+id/message"
         android:layout_width="match_parent"
@@ -160,7 +169,10 @@
         style="@style/Tanken.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/schedule_save" />
+        android:text="@string/schedule_save"
+        app:icon="@drawable/ic_ms_save"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
       </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.textview.MaterialTextView

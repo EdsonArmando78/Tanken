@@ -59,18 +59,27 @@
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/breathing_start" />
+            android:text="@string/breathing_start"
+        app:icon="@drawable/ic_ms_play_arrow"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pause"
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/breathing_pause" />
+            android:text="@string/breathing_pause"
+        app:icon="@drawable/ic_ms_pause"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
         <com.google.android.material.button.MaterialButton
             android:id="@+id/stop"
             style="@style/Tanken.Button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/breathing_stop" />
+            android:text="@string/breathing_stop"
+        app:icon="@drawable/ic_ms_stop"
+        app:iconGravity="textStart"
+        app:iconSize="20dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

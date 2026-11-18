@@ -1,18 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
-  <item
-        android:id="@+id/openSettings"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/openSettings"
         android:title="@string/settings_title"
         android:icon="@drawable/ic_settings"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="ifRoom" />
-  <item
-        android:id="@+id/openHelp"
-        android:title="@string/help_title"
-        app:showAsAction="never" />
-  <item
-        android:id="@+id/openAbout"
-        android:title="@string/open_about"
-        app:showAsAction="never" />
+    <item android:id="@+id/openMore"
+        android:title="@string/more_options"
+        android:icon="@drawable/ic_ms_more_vert"
+        app:iconTint="?attr/colorOnSurface"
+        app:showAsAction="always">
+        <menu>
+            <item android:id="@+id/openHelp"
+                android:title="@string/help_title"
+                android:icon="@drawable/ic_ms_help"
+        app:iconTint="?attr/colorOnSurface" />
+            <item android:id="@+id/openAbout"
+                android:title="@string/open_about"
+                android:icon="@drawable/ic_ms_info"
+        app:iconTint="?attr/colorOnSurface" />
+        </menu>
+    </item>
 </menu>

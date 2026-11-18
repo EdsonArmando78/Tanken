@@ -1,144 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/root"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
-  <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="24dp"
-        android:orientation="vertical">
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_title"
-        android:textAppearance="@style/Tanken.Title"
-        android:layout_marginBottom="12dp" />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/intro"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_intro"
-        android:textAppearance="@style/Tanken.Body"
-        android:layout_marginBottom="12dp" />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/storageError"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/schedule_loading"
-        android:textAppearance="@style/Tanken.Body"
-        android:layout_marginBottom="12dp" />
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Tanken.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-      <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/digitalClock"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/schedule_loading"
-        android:textAppearance="@style/Tanken.Title"
-        android:layout_marginBottom="12dp" />
-        <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/academicContext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/schedule_loading"
-        android:textAppearance="@style/Tanken.Body"
-        android:layout_marginBottom="12dp" />
-      </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Tanken.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-      <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/motionStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/motion_waiting"
-        android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
-        <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/motionStamp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/reading_no_sample"
-        android:textAppearance="@style/Tanken.Body"
-        android:layout_marginBottom="12dp" />
-        <com.google.android.material.button.MaterialButton
-        android:id="@+id/motionButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/motion_title" />
-      </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-    <com.google.android.material.card.MaterialCardView
-        style="@style/Tanken.Card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-      <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp">
-        <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/nextNotice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_no_notice"
-        android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
-        <com.google.android.material.button.MaterialButton
-        android:id="@+id/remindersButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/reminders_title" />
-      </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/breathingButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/breathing_title" />
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/scheduleButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/open_schedule" />
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/timersButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/timers_title" />
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/wellnessButton"
-        style="@style/Tanken.Button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/wellness_title" />
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/otherTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/home_tools"
-        android:textAppearance="@style/Tanken.Section"
-        android:layout_marginBottom="12dp" />
-  </LinearLayout>
-</ScrollView>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/root"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:paddingHorizontal="16dp" android:paddingVertical="12dp">
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/date"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnSurfaceVariant" android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/storageError"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone"
+            android:textAppearance="@style/Tanken.Body" android:layout_marginBottom="12dp" />
+        <com.google.android.material.card.MaterialCardView style="@style/Tanken.Card"
+            android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                <com.google.android.material.textview.MaterialTextView android:id="@+id/classLabel"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone"
+                    android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                    android:textColor="?attr/colorOnSurfaceVariant" android:layout_marginBottom="12dp" />
+                <com.google.android.material.textview.MaterialTextView android:id="@+id/className"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/schedule_loading"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall" android:layout_marginBottom="12dp" />
+                <com.google.android.material.textview.MaterialTextView android:id="@+id/classDetails"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone"
+                    android:textAppearance="@style/Tanken.Body" android:layout_marginBottom="12dp" />
+                <com.google.android.material.textview.MaterialTextView android:id="@+id/classRoom"
+                    android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone"
+                    android:textAppearance="@style/Tanken.Body" android:layout_marginBottom="12dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/addSchedule"
+                    style="@style/Tanken.Button" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="@string/home_add_schedule" android:visibility="gone" android:layout_marginBottom="0dp"
+                    app:icon="@drawable/ic_ms_add" app:iconGravity="textStart" app:iconSize="20dp" />
+                <com.google.android.material.button.MaterialButton android:id="@+id/scheduleButton"
+                    style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:minHeight="48dp" android:text="@string/home_view_schedule" android:visibility="gone"
+                    app:icon="@drawable/ic_ms_arrow_forward" app:iconGravity="textEnd" app:iconSize="20dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    <LinearLayout android:id="@+id/remindersButton" style="@style/Tanken.HomeRow" android:layout_marginBottom="12dp"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal" android:visibility="gone">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_nav_reminders" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/nextNotice"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/reminders_title"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/remindersButtonArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/breathingButton" style="@style/Tanken.HomeRow"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_ms_air" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/breathingButtonLabel"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/home_breathing"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/breathingButtonArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+        <View android:layout_width="match_parent" android:layout_height="1dp"
+            android:layout_marginVertical="6dp" android:background="?attr/colorOutlineVariant" android:importantForAccessibility="no" />
+    <LinearLayout android:id="@+id/toolsToggle" style="@style/Tanken.HomeRow"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_ms_apps" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/toolsToggleLabel"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/home_tools"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/toolsToggleArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_expand_more"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+        <LinearLayout android:id="@+id/toolsContent" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone" android:layout_marginTop="12dp">
+    <LinearLayout android:id="@+id/timersButton" style="@style/Tanken.HomeRow"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_timer_notification" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/timersButtonLabel"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/timers_title"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/timersButtonArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/motionButton" style="@style/Tanken.HomeRow"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_ms_sensors" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/motionButtonLabel"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/motion_title"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/motionButtonArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+    <LinearLayout android:id="@+id/wellnessButton" style="@style/Tanken.HomeRow"
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <androidx.appcompat.widget.AppCompatImageView android:layout_width="24dp" android:layout_height="24dp"
+            app:srcCompat="@drawable/ic_ms_science" app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+        <com.google.android.material.textview.MaterialTextView android:id="@+id/wellnessButtonLabel"
+            android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp" android:text="@string/wellness_title"
+            android:textAppearance="@style/Tanken.Body" />
+        <androidx.appcompat.widget.AppCompatImageView android:id="@+id/wellnessButtonArrow"
+            android:layout_width="24dp" android:layout_height="24dp" app:srcCompat="@drawable/ic_ms_chevron_right"
+            app:tint="?attr/colorOnSurfaceVariant" android:importantForAccessibility="no" />
+    </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

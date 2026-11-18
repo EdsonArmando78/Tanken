@@ -65,8 +65,6 @@
     <string name="history_deleted">Registros eliminados</string>
     <string name="comparison_replay">Reproducir comparación</string>
     <string name="comparison_saved">Las comparaciones completadas se guardan en el historial.</string>
-    <string name="home_next_notice">Próximo aviso: %1$s\n%2$s</string>
-    <string name="home_no_notice">Sin avisos pendientes</string>
     <string name="breathing_title">Respiración</string>
     <string name="breathing_intro">Dos minutos a tu ritmo. Inhala y exhala siguiendo la figura, sin retener el aire. Puedes pausar o detener cuando quieras.</string>
     <string name="breathing_ready">Cuando estés listo</string>

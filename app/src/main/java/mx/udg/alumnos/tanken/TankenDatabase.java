@@ -6,7 +6,7 @@ import androidx.room.*;
 
 import java.util.List;
 
-/** Schema v1. All access is mediated by AppStore, never by a screen. */
+/** All access is mediated by AppStore, never by a screen. */
 @Database(
         entities = {
             TankenDatabase.LessonRow.class,
@@ -18,7 +18,7 @@ import java.util.List;
             TankenDatabase.ServiceRow.class,
             TankenDatabase.CatalogInfo.class
         },
-        version = 3,
+        version = 4,
         exportSchema = true)
 public abstract class TankenDatabase extends RoomDatabase {
     public static final androidx.room.migration.Migration MIGRATION_1_2 =
@@ -58,8 +58,18 @@ public abstract class TankenDatabase extends RoomDatabase {
                                 + " NOT NULL, source TEXT NOT NULL, reviewedAt TEXT NOT NULL)");
                     db.execSQL(
                             "CREATE TABLE IF NOT EXISTS catalog_info (id INTEGER NOT NULL PRIMARY"
-                                + " KEY, version TEXT NOT NULL, imported INTEGER NOT NULL,"
-                                + " importedAt INTEGER NOT NULL)");
+                                    + " KEY, version TEXT NOT NULL, imported INTEGER NOT NULL,"
+                                    + " importedAt INTEGER NOT NULL)");
+                }
+            };
+
+    public static final androidx.room.migration.Migration MIGRATION_3_4 =
+            new androidx.room.migration.Migration(3, 4) {
+                @Override
+                public void migrate(@NonNull androidx.sqlite.db.SupportSQLiteDatabase db) {
+                    db.execSQL("ALTER TABLE lessons ADD COLUMN groupId TEXT NOT NULL DEFAULT ''");
+                    db.execSQL("ALTER TABLE lessons ADD COLUMN room TEXT NOT NULL DEFAULT ''");
+                    db.execSQL("UPDATE lessons SET groupId=id");
                 }
             };
 
@@ -111,6 +121,9 @@ public abstract class TankenDatabase extends RoomDatabase {
     public static class LessonRow {
         @PrimaryKey @NonNull public String id = "";
         @NonNull public String name = "";
+        @NonNull
+        @ColumnInfo(defaultValue = "''")
+        public String groupId = "", room = "";
         public int day;
         @NonNull public String start = "", end = "";
         public long updatedAt;
@@ -121,6 +134,8 @@ public abstract class TankenDatabase extends RoomDatabase {
         public LessonRow(AcademicSchedule.Lesson l) {
             id = l.id;
             name = l.name;
+            groupId = l.groupId;
+            room = l.room;
             day = l.day.getValue();
             start = l.start.toString();
             end = l.end.toString();
@@ -133,7 +148,9 @@ public abstract class TankenDatabase extends RoomDatabase {
                     name,
                     java.time.DayOfWeek.of(day),
                     java.time.LocalTime.parse(start),
-                    java.time.LocalTime.parse(end));
+                    java.time.LocalTime.parse(end),
+                    groupId.isEmpty() ? id : groupId,
+                    room);
         }
     }
 
@@ -279,8 +296,8 @@ public abstract class TankenDatabase extends RoomDatabase {
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         void putLesson(LessonRow row);
 
-        @Query("DELETE FROM lessons WHERE id = :id")
-        void deleteLesson(String id);
+        @Query("DELETE FROM lessons WHERE groupId = :id OR (groupId = '' AND id = :id)")
+        void deleteLessonGroup(String id);
 
         @Query("SELECT value FROM metadata WHERE `key` = :key")
         String metadata(String key);

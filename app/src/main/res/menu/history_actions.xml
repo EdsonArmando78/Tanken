@@ -5,9 +5,13 @@
     <item
         android:id="@+id/clearFilteredHistory"
         android:title="@string/history_delete"
+        android:icon="@drawable/ic_ms_delete"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="never" />
     <item
         android:id="@+id/clearAllHistory"
         android:title="@string/history_delete_all"
+        android:icon="@drawable/ic_ms_delete_forever"
+        app:iconTint="?attr/colorOnSurface"
         app:showAsAction="never" />
 </menu>
