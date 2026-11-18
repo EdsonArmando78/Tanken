@@ -1,0 +1,34 @@
+<resources>
+    <string name="home_title">Tu jornada</string>
+    <string name="home_intro">Un espacio para organizarte y hacer una pausa.</string>
+    <string name="home_tools">Herramientas y otros accesos</string>
+    <string name="schedule_heading">Tu semana, a tu ritmo</string>
+    <string name="schedule_help">Organiza tus clases. Los intervalos consecutivos están permitidos.</string>
+    <string name="schedule_edit">Editar clase</string>
+    <string name="schedule_day">Día de la semana</string>
+    <string name="schedule_invalid">Escribe una materia y elige un intervalo que termine después de iniciar.</string>
+    <string name="schedule_loading">Cargando tu horario…</string>
+    <string name="storage_failed">No se pudieron leer o guardar los datos. Se conservaron los archivos existentes. Vuelve a abrir la aplicación para reintentar.</string>
+    <string name="import_warning">Horario recuperado. Registros inválidos: %1$d. El archivo original se conserva.</string>
+    <string name="reading_pause">Pausar lectura</string>
+    <string name="reading_resume">Reanudar lectura</string>
+    <string name="reading_background">Lectura suspendida en segundo plano</string>
+    <string name="reading_paused">Lectura pausada por ti</string>
+    <string name="reading_stale">Sin datos recientes · no implica reposo</string>
+    <string name="reading_source">Acelerómetro del teléfono · m/s²</string>
+    <string name="reading_stamp">Última lectura: %1$s · hace %2$d s</string>
+    <string name="reading_no_sample">Aún no hay una lectura disponible.</string>
+    <string name="reading_session">Muestras: %1$d · tiempo observado: %2$d s\nMovimiento: %3$.2f m/s² · pico: %4$.2f m/s²</string>
+    <string name="home_motion_stamp">Acelerómetro del teléfono · m/s²\n%1$s</string>
+    <string name="reading_help">La lectura continúa mientras Tanken está visible. Los huecos sin datos no cuentan como reposo. Estos indicadores aproximados no miden pasos ni estados de salud.</string>
+    <string name="reading_intro">Explora el movimiento</string>
+    <string name="reading_axis">%1$s · %2$.2f m/s²</string>
+    <string name="reading_axis_missing">%1$s · sin lectura</string>
+    <string name="back">Volver</string>
+    <string name="home_current">%1$s · termina en %2$s</string>
+    <string name="home_next">Próxima: %1$s · %2$s\nComienza en %3$s</string>
+    <string name="home_days">%1$d d %2$s</string>
+    <string name="save_busy">Guardando…</string>
+    <string name="schedule_start_label">Hora de inicio</string>
+    <string name="schedule_end_label">Hora de fin</string>
+</resources>

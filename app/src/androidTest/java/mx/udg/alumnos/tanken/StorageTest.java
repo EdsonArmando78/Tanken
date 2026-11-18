@@ -1,0 +1,172 @@
+package mx.udg.alumnos.tanken;
+
+import static org.junit.Assert.*;
+
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.SharedPreferences;
+
+import androidx.room.Room;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.junit.*;
+import org.junit.runner.RunWith;
+
+import java.time.*;
+import java.util.*;
+
+/** Isolated database and preference names: never alters the student's saved schedule. */
+@RunWith(AndroidJUnit4.class)
+public class StorageTest {
+    private Context context;
+    private TankenDatabase db;
+    private String databaseName, preferenceName;
+
+    @Before
+    public void open() {
+        Context base = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        String suffix = UUID.randomUUID().toString();
+        databaseName = "test-" + suffix + ".db";
+        preferenceName = "test-" + suffix;
+        context =
+                new ContextWrapper(base) {
+                    @Override
+                    public SharedPreferences getSharedPreferences(String name, int mode) {
+                        return super.getSharedPreferences(preferenceName, mode);
+                    }
+                };
+        db = Room.databaseBuilder(base, TankenDatabase.class, databaseName).build();
+    }
+
+    @After
+    public void close() {
+        db.close();
+        context.deleteDatabase(databaseName);
+        context.deleteSharedPreferences(preferenceName);
+    }
+
+    @Test
+    public void legacyImportSurvivesReopenAndNeverDuplicatesOrReplacesOriginal() {
+        String raw =
+                "[{\"name\":\"Java\",\"day\":1,\"start\":\"08:00\",\"end\":\"09:00\"},{\"name\":\"Broken\"}]";
+        SharedPreferences old = context.getSharedPreferences("academic_schedule", 0);
+        assertTrue(old.edit().putString("lessons", raw).commit());
+        assertNotNull(LegacyScheduleImport.run(db, context));
+        String id = db.records().lessons().get(0).id;
+        assertEquals(raw, old.getString("lessons", ""));
+        db.close();
+        db = Room.databaseBuilder(context, TankenDatabase.class, databaseName).build();
+        LegacyScheduleImport.run(db, context);
+        assertEquals(1, db.records().lessons().size());
+        assertEquals(id, db.records().lessons().get(0).id);
+    }
+
+    @Test
+    public void malformedRootIsPreservedAndNotMarkedImported() {
+        SharedPreferences old = context.getSharedPreferences("academic_schedule", 0);
+        assertTrue(old.edit().putString("lessons", "not-json").commit());
+        assertThrows(IllegalStateException.class, () -> LegacyScheduleImport.run(db, context));
+        assertNull(db.records().metadata("scheduleImported"));
+        assertEquals("not-json", old.getString("lessons", ""));
+    }
+
+    @Test
+    public void transitionsAreIdempotentAndRetentionProtectsPendingNotices() {
+        TankenDatabase.NoticeRow row = new TankenDatabase.NoticeRow();
+        row.id = "notice";
+        row.kind = "HYDRATION";
+        row.originalDue = 100;
+        row.nextAttempt = 100;
+        db.records().insertNotice(row);
+        assertTrue(
+                NoticeTransitions.apply(
+                        db,
+                        row.id,
+                        "class",
+                        NoticeRules.State.SNOOZED,
+                        NoticeRules.Reason.CLASS,
+                        100,
+                        200));
+        assertFalse(
+                NoticeTransitions.apply(
+                        db,
+                        row.id,
+                        "class",
+                        NoticeRules.State.SNOOZED,
+                        NoticeRules.Reason.CLASS,
+                        100,
+                        300));
+        assertEquals(100, db.records().notice(row.id).originalDue);
+        assertEquals(200, db.records().notice(row.id).nextAttempt);
+        db.records().pruneNotices(1000);
+        assertNotNull(db.records().notice(row.id));
+        assertTrue(
+                NoticeTransitions.apply(
+                        db,
+                        row.id,
+                        "issue",
+                        NoticeRules.State.ISSUED,
+                        NoticeRules.Reason.NONE,
+                        200,
+                        0));
+        assertTrue(
+                NoticeTransitions.apply(
+                        db,
+                        row.id,
+                        "done",
+                        NoticeRules.State.COMPLETED,
+                        NoticeRules.Reason.USER,
+                        201,
+                        0));
+        assertFalse(
+                NoticeTransitions.apply(
+                        db,
+                        row.id,
+                        "skip",
+                        NoticeRules.State.SKIPPED,
+                        NoticeRules.Reason.USER,
+                        202,
+                        0));
+        db.records().pruneNotices(1000);
+        assertNull(db.records().notice(row.id));
+        assertEquals(0, db.records().actionCount(row.id, "done"));
+    }
+
+    @Test
+    public void comparisonRoundTripIsReproducibleUniqueAndBounded() {
+        List<AcademicSchedule.Lesson> lessons =
+                Collections.singletonList(
+                        new AcademicSchedule.Lesson(
+                                "id",
+                                "Java",
+                                DayOfWeek.MONDAY,
+                                LocalTime.of(8, 0),
+                                LocalTime.of(10, 0)));
+        WellnessSimulation.Comparison comparison =
+                WellnessSimulation.compare(
+                        lessons,
+                        ZonedDateTime.parse("2026-11-16T07:00:00-06:00[America/Mexico_City]"),
+                        60,
+                        true);
+        String payload = ComparisonCodec.encode(lessons, comparison);
+        WellnessSimulation.Comparison replay = ComparisonCodec.replay(payload);
+        assertEquals(payload, ComparisonCodec.encode(lessons, replay));
+        db.runInTransaction(
+                () -> {
+                    for (int i = 0; i < 101; i++) {
+                        TankenDatabase.ComparisonRow row = new TankenDatabase.ComparisonRow();
+                        row.id = "comparison-" + i;
+                        row.createdAt = 1000 + i;
+                        row.inputAndResults = payload;
+                        db.records().putComparison(row);
+                        assertEquals(-1, db.records().putComparison(row));
+                    }
+                });
+        db.records().pruneComparisons(0);
+        assertEquals(100, db.records().comparisons().size());
+        assertEquals(payload, db.records().comparisons().get(0).inputAndResults);
+        db.records().pruneComparisons(2000);
+        assertTrue(db.records().comparisons().isEmpty());
+    }
+}

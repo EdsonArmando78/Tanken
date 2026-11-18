@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='utf-8'?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:orientation="vertical">
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="56dp"
+            app:title="@string/reading_intro"
+            app:titleTextAppearance="@style/Tanken.Section"
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationContentDescription="@string/back" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reading_source"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/storageError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/schedule_loading"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="12dp" />
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Tanken.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/status"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/motion_waiting"
+                    android:textAppearance="@style/Tanken.Section"
+                    android:layout_marginBottom="12dp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/stamp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reading_no_sample"
+                    android:textAppearance="@style/Tanken.Body"
+                    android:layout_marginBottom="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Tanken.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/xValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reading_no_sample"
+                    android:textAppearance="@style/Tanken.Section"
+                    android:layout_marginBottom="12dp" />
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/xBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:max="2000"
+                    app:trackCornerRadius="6dp"
+                    app:trackThickness="12dp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/yValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reading_no_sample"
+                    android:textAppearance="@style/Tanken.Section"
+                    android:layout_marginBottom="12dp" />
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/yBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:max="2000"
+                    app:trackCornerRadius="6dp"
+                    app:trackThickness="12dp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/zValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reading_no_sample"
+                    android:textAppearance="@style/Tanken.Section"
+                    android:layout_marginBottom="12dp" />
+                <com.google.android.material.progressindicator.LinearProgressIndicator
+                    android:id="@+id/zBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="12dp"
+                    android:layout_marginBottom="16dp"
+                    android:max="2000"
+                    app:trackCornerRadius="6dp"
+                    app:trackThickness="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Tanken.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reading_no_sample"
+                    android:textAppearance="@style/Tanken.Body"
+                    android:layout_marginBottom="12dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/pause"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reading_pause" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/reset"
+            style="@style/Tanken.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/motion_reset" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/help"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/reading_help"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="12dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/motion_help"
+            android:textAppearance="@style/Tanken.Body"
+            android:layout_marginBottom="16dp" />
+    </LinearLayout>
+</ScrollView>

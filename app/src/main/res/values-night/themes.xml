@@ -1,0 +1,11 @@
+<resources>
+<style name="Base.Theme.Tanken" parent="Theme.Material3Expressive.DayNight.NoActionBar">
+<item name="colorPrimary">#80D5CB</item>
+<item name="colorOnPrimary">#003732</item>
+<item name="colorPrimaryContainer">#005049</item>
+<item name="colorOnPrimaryContainer">#9CF2E6</item>
+<item name="colorSecondaryContainer">#354B47</item>
+<item name="colorOnSecondaryContainer">#CCE8E1</item>
+</style>
+
+</resources>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="motion_title">Monitor de movimiento</string>
+    <string name="motion_waiting">Esperando datos del sensor…</string>
+    <string name="motion_missing">Este dispositivo no tiene acelerómetro disponible.</string>
+    <string name="motion_failed">No se pudo iniciar el acelerómetro. Vuelve a entrar para reintentar.</string>
+    <string name="motion_still">En reposo aproximado</string>
+    <string name="motion_moving">Movimiento detectado</string>
+    <string name="motion_strong">Movimiento intenso</string>
+    <string name="motion_help">X: izquierda / derecha\nY: abajo / arriba\nZ: perpendicular a la pantalla\n\nValores originales en m/s², incluida la gravedad: en reposo, la magnitud suele ser cercana a 9.81. Las barras representan |aceleración| de 0 a 20 m/s²; el signo aparece en cada lectura. Los ejes pertenecen a la orientación natural del dispositivo.\n\nEl movimiento se estima filtrando la gravedad. Es una demostración: inclinar el teléfono también puede activar el indicador.</string>
+    <string name="motion_reset">Reiniciar medición</string>
+</resources>
