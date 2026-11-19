@@ -1,0 +1,7 @@
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="es">
+    <string name="notification_required_title">Habilita las notificaciones</string>
+    <string name="notification_required_message">Sin autorización para mostrar notificaciones no recibirás avisos de hidratación, pausas ni clases fuera de Tanken. Puedes guardar tus recordatorios, pero debes permitir las notificaciones y habilitar su canal en Android para recibirlos.</string>
+    <string name="notification_later">Ahora no</string>
+    <string name="day_selected">%1$s, seleccionado</string>
+    <string name="day_unselected">%1$s, sin seleccionar</string>
+</resources>

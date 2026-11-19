@@ -1,0 +1,5 @@
+<resources>
+    <style name="Tanken.Title" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textStyle">bold</item>
+    </style>
+</resources>

@@ -1,64 +1,41 @@
 # Tanken
 
-Aplicación Android de asistencia al bienestar estudiantil en CUCEI. Funciona con
-los sensores del teléfono; la integración con sensores vitales de un wearable es
-una ampliación futura. No realiza diagnósticos.
+Aplicación Android de asistencia al bienestar estudiantil en CUCEI. Integra
+horario de clases, recordatorios, monitor de movimiento, historial, respiración
+guiada y directorio de servicios. Funciona con sensores del teléfono y datos
+locales; la lectura de sensores vitales de un wearable es trabajo futuro.
+No realiza diagnósticos.
 
-El [plan de implementación y ejecución](docs/PLAN_IMPLEMENTACION.md) registra el
-estado real del código, las tareas pendientes y los criterios para cerrar el
-proyecto integrador. La presencia de una función en el reporte no acredita su
-implementación: consultar la matriz de estado del plan.
+## Compilar
 
-## Entorno
-
-- Android Studio y Android SDK; configurar la ubicación local del SDK sin subir
-  `local.properties` a Git.
-- JDK 25 para el daemon de Gradle, según `gradle/gradle-daemon-jvm.properties`.
-  El código Java del módulo usa compatibilidad Java 11.
-- Gradle 9.6.0 y Android Gradle Plugin 9.5.1 mediante los archivos del proyecto.
-- `minSdk 26` (Android 8.0), `targetSdk 37`, `compileSdk 37`.
-- Dispositivo previsto para la validación final: moto edge 50 pro con Android 16.
-  Ese ensayo no demuestra compatibilidad con todos los dispositivos Android 8+.
-
-## Compilar y verificar
-
-Desde la raíz del repositorio, en Windows:
+Requiere Android SDK 37 y JDK 25 para Gradle. Configurar el SDK mediante
+`local.properties` sin incorporarlo a Git. El código Java usa compatibilidad 11.
+El proyecto incluye Gradle 9.6.0 y Android Gradle Plugin 9.5.1.
+Android mínimo: 8.0 (API 26); compileSdk y targetSdk: 37.
 
 ```powershell
 .\gradlew.bat testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug
 ```
 
-En Linux o macOS, usar `./gradlew` con las mismas tareas y un SDK local válido.
-El APK debug se genera en `app/build/outputs/apk/debug/app-debug.apk`.
+En Linux o macOS, usar `./gradlew` con las mismas tareas.
+APK: `app/build/outputs/apk/debug/app-debug.apk`.
+Informes: `app/build/reports/`.
 
-Las pruebas de `AcademicScheduleTest` y `WellnessSimulationTest` verifican lógica
-de horario y simulación. `ClassTimersTest` y `WellnessThreadsTest` requieren un
-dispositivo Android. Para ejecutarlas con un único teléfono de prueba conectado:
+Validación del 18/11/2026: 34 pruebas unitarias aprobadas, APK debug y de pruebas
+compilados y lint sin incidencias. Las pruebas instrumentadas no se ejecutaron.
+Las correcciones de filtros, selección de días, respiración y permisos de
+notificaciones se comprobaron manualmente en un moto edge 50 pro con Android 16.
+La entrega de avisos tras reiniciar el teléfono conserva un resultado inconcluso.
+
+Para ejecutar pruebas instrumentadas con un dispositivo conectado:
 
 ```powershell
 .\gradlew.bat connectedDebugAndroidTest
 ```
 
-Los informes de tareas y pruebas se generan dentro de `app/build/reports/`.
-Compilar el APK de pruebas no equivale a ejecutarlas. Consultar el plan para la
-matriz manual, las limitaciones actuales y los resultados que aún deben obtenerse.
+## Instalar
 
-Validación del 18/11/2026 tras corregir lint: 14 pruebas unitarias aprobadas,
-APK debug y APK de pruebas compilados, lint sin errores ni advertencias. No había
-un teléfono conectado para ejecutar las pruebas instrumentadas. El arranque ahora
-abre directamente `MainActivity`, sin la pantalla adicional con espera artificial.
-
-Tras implementar las fases 2 y 3: 27 pruebas unitarias aprobadas, ambos APK
-generados y lint sin incidencias. Las pruebas instrumentadas y la revisión
-visual en el teléfono siguen pendientes.
-
-Fases 4 y 5: 31 pruebas unitarias aprobadas; migración Room v1→v2 y nuevas
-pruebas instrumentadas preparadas. La validación física sigue pendiente.
-
-## Instalar en un teléfono físico
-
-Activar depuración USB y autorizar el equipo en el teléfono. Los instaladores
-buscan ADB en `PATH`, variables del SDK y la ubicación habitual del sistema.
+Activar depuración USB y autorizar el equipo en el teléfono.
 
 ```powershell
 .\scripts\install-test-apk.cmd --list
@@ -67,122 +44,64 @@ buscan ADB en `PATH`, variables del SDK y la ubicación habitual del sistema.
 .\scripts\install-test-apk.cmd --skip-build --no-launch
 ```
 
-En Linux:
+En Linux: `bash scripts/install-test-apk.sh`. Los scripts buscan ADB en el
+entorno y en las ubicaciones habituales del SDK. Con varios dispositivos,
+seleccionar uno mediante `--serial`.
 
-```sh
-bash scripts/install-test-apk.sh --list
-bash scripts/install-test-apk.sh
-```
+## Funcionamiento
 
-En Windows el lanzador `.cmd` utiliza `install-test-apk.ps1`. Los scripts resuelven
-la raíz a partir de su propia ubicación y se pueden invocar mediante una ruta
-absoluta desde otro directorio. Si hay varios teléfonos listos, es obligatorio
-seleccionar uno con `--serial`. No se inicia un emulador automáticamente.
+- Horario semanal con edición, eliminación y rechazo de empalmes; persistencia Room.
+- Recordatorios de hidratación, pausas y próximas clases, con días y silencio;
+  acciones Realizado, Posponer diez minutos y Omitir. Se advierte si faltan permisos.
+- Historial con filtros, detalles y borrado confirmado.
+- Monitor de acelerómetro mientras la app está visible; conserva estado al girar
+  y suspende lecturas en segundo plano. No mide pasos, pulso ni estados de salud.
+- Respiración visual de dos minutos con ciclos 4/4; guarda el progreso al salir
+  y permite retomarlo en pausa.
+- Comparación de avisos fijos y con contexto académico sobre ocho horas del
+  horario guardado. Guarda resultados; la simulación no programa avisos reales.
+- Temporizadores con hasta cuatro activos y una cola adicional. Se conservan
+  al girar, pero se cancelan al cerrar su pantalla y no sobreviven a la muerte
+  del proceso.
+- Directorio local de servicios con importación JSON y confirmación de sustitución.
+  Un archivo inválido conserva los datos anteriores. Los enlaces abren otras apps.
+- Tutorial, ayuda, tema del sistema y restablecimiento confirmado de datos locales.
 
-## Qué funciona actualmente
+Las alarmas son flexibles y Android puede retrasarlas. Tras una detención forzada
+hay que abrir la app para reactivar la programación. No se solicita acceso a
+alarmas exactas. El movimiento es una estimación demostrativa: la falta de
+lecturas no acredita reposo y los cambios de inclinación pueden producir
+detecciones transitorias.
 
-- Inicio: próxima clase de hoy, acceso para agregar horario y un aviso pendiente.
-  Respiración a un toque y herramientas plegables; el monitor concentra las lecturas.
-- Horario semanal: clases con varios días (Lu–Sá), horario y salón compartidos;
-  edición/eliminación de la clase completa y validación de cruces en todos sus días. Persistencia Room con
-  importación del horario anterior sin borrar sus preferencias originales.
-- Movimiento: acelerómetro XYZ compartido mientras la app está visible; sesión
-  conservada al navegar/rotar, pausa persistente y resúmenes en Room. Distingue
-  lectura ausente/antigua del reposo observado; suspende en segundo plano.
-- Temporizadores: hasta cuatro activos y cola adicional, cancelación y aviso al
-  terminar. Se conservan al rotar; se cancelan al cerrar su pantalla y no sobreviven
-  a la muerte del proceso. No son alarmas persistentes.
-- Simulador: compara intervalos fijos y contexto académico sobre ocho horas del
-  horario guardado, con entradas sintéticas y cancelación. Conserva ID,
-  vencimiento original, reprogramaciones, emisiones y pendientes. No programa
-  notificaciones reales. Guarda comparaciones completadas con sus entradas, horario
-  y resultados para consultarlas o reproducirlas desde Historial.
+## Catálogos de prueba
 
-- Recordatorios: hidratación, pausas y próximas clases, con días y silencio
-  compartidos; acciones Realizado/Posponer 10 min/Omitir y recuperación persistente.
-- Historial: filtros por fecha/tipo, detalles y borrado confirmado. El borrado
-  completo cancela pendientes y desactiva recordatorios; el filtrado los conserva.
-- Respiración: dos minutos de ciclos visuales 4/4; conserva avance al rotar y se
-  pausa al salir.
+[Catálogo válido](tools/catalogs/catalogo_valido.json) y
+[catálogo inválido](tools/catalogs/catalogo_invalido.json).
+Importar desde Servicios; tamaño máximo de 512 KiB, UTF-8.
 
-Las alarmas son flexibles: Android puede retrasarlas. El cierre normal del proceso
-conserva eventos; después de una detención forzada hay que abrir la app para
-reactivar la programación. No se solicita acceso a alarmas exactas.
-
-El monitor usa un filtro de gravedad de 0.5 s y umbrales demostrativos de 0.8 y
-4 m/s². Cambiar la inclinación puede producir detecciones transitorias; no mide
-pasos, pulso ni estados de salud. La ausencia de lecturas no acredita inactividad.
-
-La comparación corre en `HandlerThread("HiloFondo")` y comunica progreso y resultado
-con `Handler` y estados observables, sin esperas artificiales. El tiempo de cálculo
-no equivale a la latencia de una notificación.
-
-Las pantallas principales y las nuevas usan Material 3 Expressive con colores dinámicos,
-Views XML y View Binding. El horario usa RecyclerView/ListAdapter/DiffUtil;
-ViewModel/LiveData separan estado e interfaz. Room conserva hasta 30 días, con
-límites por tipo y sin eliminar avisos pendientes. La base está excluida de respaldos.
-Consultar [pendientes de integración](docs/PENDIENTES_INTEGRACION.md).
-
-El tutorial inicial presenta seis tarjetas deslizables y permite habilitar notificaciones
-con una explicación previa, o continuar sin ese permiso. Se puede omitir y repetir desde
-**Ayuda y privacidad → Repetir tutorial inicial**. Conserva la página al rotar; el
-restablecimiento de la app vuelve a mostrarlo.
-
-## Servicios, navegación y datos
-
-Inicio, Recordatorios, Historial y Servicios usan navegación inferior. Ajustes
-permite administrar lectura y notificaciones, o restablecer la app con confirmación:
-borra horario/historial/preferencias, cancela avisos y restaura el catálogo inicial.
-Conserva los permisos concedidos por Android. Room v4 migra los datos anteriores.
-El lanzador y Acerca de usan el logo integrado en los recursos de la app.
-
-El directorio funciona sin conexión. Datos iniciales revisados el 18/11/2026 en la
-[Unidad de Atención para la Salud del CUCEI](https://www.cucei.udg.mx/servicios/medicos-y-clinicos).
-El horario publicado corresponde a la unidad; confirmar disponibilidad de cada servicio.
-Desde Servicios se importa JSON UTF-8 de hasta 512 KiB, con confirmación de sustitución
-completa. Un error conserva el catálogo vigente. Ejemplos:
-[catálogo válido](docs/catalogo_valido.json) y [duplicado inválido](docs/catalogo_invalido.json).
-Formato: `schemaVersion: 1`, `version` y entre 1 y 100 `services`; cada servicio requiere
-`id` único, `name`, `location`, `source` HTTPS y `reviewedAt` ISO; `phone`, `extension`,
-`email` y `hours` son opcionales. Los enlaces se abren externamente.
-
-Fases 6 y 7: 31 unitarias aprobadas; APK de aplicación e instrumentadas compilados.
-Pruebas en teléfono pendientes, incluida la migración v2→v3 y el restablecimiento.
-
-Iconografía: [Material Symbols Rounded de Google Fonts](https://fonts.google.com/icons),
-incluida como vectores locales. Licencia Apache 2.0 y atribución en
-`app/src/main/assets/licenses/`.
+Formato: `schemaVersion: 1`, `version` y entre 1 y 100 `services`. Cada servicio
+requiere `id` único, `name`, `location`, `source` HTTPS y `reviewedAt` ISO.
+`phone`, `extension`, `email` y `hours` son opcionales.
 
 ## Organización
 
 ```text
-app/src/main/         Código Java, manifiesto y recursos Android
-app/src/test/         Pruebas de lógica independientes de Android
+app/src/main/         Java, manifiesto y recursos Android
+app/src/test/         Pruebas unitarias
 app/src/androidTest/  Pruebas en dispositivo
-docs/                Plan de implementación y seguimiento
-scripts/             Instalación del APK en Windows y Linux
-tools/               Utilidades del repositorio
-gradle/              Wrapper y versiones de herramientas
+app/schemas/         Esquemas Room para migraciones
+scripts/             Instalación del APK
+tools/catalogs/      Archivos de prueba de importación
+tools/zip-tracked.py  Empaquetado de fuentes rastreadas
+gradle/              Wrapper y versiones
 ```
 
-Los documentos de trabajo del equipo y la consigna se conservan en la raíz.
-`Tanken_PF_corregido.docx` es la referencia de alcance acordada; sus secciones de
-desarrollo, pruebas, resultados y conclusiones se completarán con evidencia real.
-
-## Archivo ZIP de fuentes rastreadas
-
-```sh
-python tools/zip-tracked.py
-```
-
-Esta utilidad incluye el contenido actual de los archivos rastreados por Git y
-omite los eliminados. No incluye archivos nuevos sin rastrear, como los documentos
-de trabajo o los scripts recién movidos hasta que se incorporen a Git. No sustituye
-el paquete final con reporte, APK y evidencias descrito en el plan. No sobrescribe
-un ZIP existente.
+`python tools/zip-tracked.py` crea un ZIP con el contenido actual de los archivos
+rastreados por Git. Omite archivos eliminados y no incluye archivos nuevos sin
+rastrear. No sobrescribe un ZIP existente.
 
 ## Licencia
 
-Tanken se distribuye bajo [BSD de 3 cláusulas](LICENSE). Los recursos de terceros
-conservan sus licencias; las de Material Symbols y Tanken se incluyen también en
-`app/src/main/assets/licenses/`.
+Tanken se distribuye bajo [BSD de 3 cláusulas](LICENSE). La iconografía Material
+Symbols Rounded conserva su licencia Apache 2.0. Licencias y atribuciones locales
+en `app/src/main/assets/licenses/`.

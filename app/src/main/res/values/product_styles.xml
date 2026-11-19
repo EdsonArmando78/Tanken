@@ -14,6 +14,14 @@
         <item name="android:minHeight">56dp</item>
         <item name="android:layout_marginBottom">8dp</item>
     </style>
+    <style name="Tanken.DayButton" parent="Widget.Material3.Button.TonalButton">
+        <item name="android:textSize">14sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="strokeWidth">0dp</item>
+        <item name="backgroundTint">@color/day_background</item>
+        <item name="android:textColor">@color/day_foreground</item>
+    </style>
     <style name="ShapeAppearanceOverlay.Tanken.TextField" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">28dp</item>

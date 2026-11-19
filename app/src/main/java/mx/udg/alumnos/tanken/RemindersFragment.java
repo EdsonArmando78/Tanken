@@ -36,16 +36,40 @@ public final class RemindersFragment extends Fragment {
         initialized = false;
         model = new ViewModelProvider(this).get(RemindersViewModel.class);
         setFormEnabled(false);
-        b.save.setOnClickListener(v -> model.save(capture()));
+        b.save.setOnClickListener(
+                v -> {
+                    if (b.hydration.isChecked() || b.breaks.isChecked() || b.classes.isChecked())
+                        warnIfBlocked();
+                    model.save(capture());
+                });
         b.permission.setOnClickListener(v -> permission.requestOrSettings());
         String[] days = getResources().getStringArray(R.array.schedule_days);
         for (String day : days) {
             Chip chip = new Chip(requireContext());
             chip.setText(day);
             chip.setCheckable(true);
+            chip.setCheckedIconVisible(true);
+            chip.setCheckedIconResource(R.drawable.ic_ms_done);
+            chip.setChipBackgroundColor(
+                    androidx.appcompat.content.res.AppCompatResources.getColorStateList(
+                            requireContext(), R.color.day_background));
+            chip.setTextColor(
+                    androidx.appcompat.content.res.AppCompatResources.getColorStateList(
+                            requireContext(), R.color.day_foreground));
+            chip.setCheckedIconTint(
+                    androidx.appcompat.content.res.AppCompatResources.getColorStateList(
+                            requireContext(), R.color.day_foreground));
+            chip.setContentDescription(getString(R.string.day_unselected, day));
             chip.setSaveEnabled(false);
             b.days.addView(chip);
-            chip.setOnCheckedChangeListener((view, checked) -> persistDraft());
+            chip.setOnCheckedChangeListener(
+                    (view, checked) -> {
+                        chip.setContentDescription(
+                                getString(
+                                        checked ? R.string.day_selected : R.string.day_unselected,
+                                        day));
+                        persistDraft();
+                    });
         }
         android.text.TextWatcher watcher =
                 new android.text.TextWatcher() {
@@ -60,9 +84,9 @@ public final class RemindersFragment extends Fragment {
         b.hydrationMinutes.addTextChangedListener(watcher);
         b.breakMinutes.addTextChangedListener(watcher);
         b.classLead.addTextChangedListener(watcher);
-        b.hydration.setOnCheckedChangeListener((v, checked) -> persistDraft());
-        b.breaks.setOnCheckedChangeListener((v, checked) -> persistDraft());
-        b.classes.setOnCheckedChangeListener((v, checked) -> persistDraft());
+        b.hydration.setOnCheckedChangeListener((v, checked) -> reminderChanged(checked));
+        b.breaks.setOnCheckedChangeListener((v, checked) -> reminderChanged(checked));
+        b.classes.setOnCheckedChangeListener((v, checked) -> reminderChanged(checked));
         b.silenceStart.setOnClickListener(v -> pick(true));
         b.silenceEnd.setOnClickListener(v -> pick(false));
         model.preferences()
@@ -148,11 +172,21 @@ public final class RemindersFragment extends Fragment {
     }
 
     private void notificationStatus() {
-        if (b != null)
-            b.notificationStatus.setText(
-                    ReminderNotifications.restriction(requireContext()).isEmpty()
-                            ? R.string.notification_enabled
-                            : R.string.publication_blocked);
+        if (b == null) return;
+        boolean blocked = !ReminderNotifications.restriction(requireContext()).isEmpty();
+        b.notificationStatus.setText(R.string.notification_required_message);
+        b.notificationStatus.setVisibility(blocked ? View.VISIBLE : View.GONE);
+        b.permission.setVisibility(blocked ? View.VISIBLE : View.GONE);
+    }
+
+    private void reminderChanged(boolean checked) {
+        persistDraft();
+        if (initialized && checked) warnIfBlocked();
+    }
+
+    private void warnIfBlocked() {
+        if (!ReminderNotifications.restriction(requireContext()).isEmpty())
+            permission.explainBlocked(ReminderNotifications.CHANNEL);
     }
 
     private Bundle capture() {
@@ -215,6 +249,7 @@ public final class RemindersFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
+        permission.dismiss();
         persistDraft();
         b = null;
         initialized = false;

@@ -529,6 +529,7 @@ public final class AppStore {
                     "academic_schedule",
                     "wellness_preferences",
                     "TimersActivity",
+                    BreathingViewModel.PREFERENCES,
                     OnboardingState.PREFERENCES
                 })
             if (!context.getSharedPreferences(file, Context.MODE_PRIVATE).edit().clear().commit())

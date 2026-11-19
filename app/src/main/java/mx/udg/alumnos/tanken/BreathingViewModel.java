@@ -1,10 +1,15 @@
 package mx.udg.alumnos.tanken;
 
+import android.app.Application;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.*;
 
 import androidx.lifecycle.*;
 
-public final class BreathingViewModel extends ViewModel {
+public final class BreathingViewModel extends AndroidViewModel {
+    static final String PREFERENCES = "breathing_session";
+
     public enum Status {
         READY,
         RUNNING,
@@ -28,6 +33,7 @@ public final class BreathingViewModel extends ViewModel {
     }
 
     private final SavedStateHandle saved;
+    private final SharedPreferences session;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final MutableLiveData<State> state = new MutableLiveData<>();
     private Status status;
@@ -41,12 +47,25 @@ public final class BreathingViewModel extends ViewModel {
                 }
             };
 
-    public BreathingViewModel(SavedStateHandle saved) {
+    public BreathingViewModel(Application app, SavedStateHandle saved) {
+        super(app);
         this.saved = saved;
+        session = app.getSharedPreferences(PREFERENCES, Context.MODE_PRIVATE);
         Long previous = saved.get("elapsed");
-        accumulated = previous == null ? 0 : Math.min(120_000, previous);
+        accumulated =
+                Math.max(
+                        0,
+                        Math.min(
+                                120_000,
+                                previous == null ? session.getLong("elapsed", 0) : previous));
         String previousStatus = saved.get("status");
-        status = previousStatus == null ? Status.READY : Status.valueOf(previousStatus);
+        if (previousStatus == null) previousStatus = session.getString("status", "READY");
+        try {
+            status = Status.valueOf(previousStatus);
+        } catch (IllegalArgumentException invalid) {
+            status = Status.READY;
+            accumulated = 0;
+        }
         if (status == Status.RUNNING) status = Status.PAUSED;
         update();
     }
@@ -103,6 +122,11 @@ public final class BreathingViewModel extends ViewModel {
     public void snapshot() {
         saved.set("elapsed", elapsed());
         saved.set("status", status.name());
+        // A new Activity can resume the exercise, but never run it while it is hidden.
+        session.edit()
+                .putLong("elapsed", elapsed())
+                .putString("status", status == Status.RUNNING ? "PAUSED" : status.name())
+                .apply();
     }
 
     public void hidden(boolean changingConfiguration) {

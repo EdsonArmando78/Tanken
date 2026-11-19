@@ -10,7 +10,11 @@ import android.widget.Toast;
 
 import androidx.activity.result.*;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.function.Supplier;
 
@@ -18,7 +22,8 @@ import java.util.function.Supplier;
 final class NotificationAccess {
     private final Supplier<Activity> activity;
     private final ActivityResultLauncher<String> request;
-    private boolean asked;
+    private boolean requesting;
+    private androidx.appcompat.app.AlertDialog explanation;
 
     NotificationAccess(ActivityResultCaller owner, Supplier<Activity> activity, Runnable changed) {
         this.activity = activity;
@@ -26,6 +31,7 @@ final class NotificationAccess {
                 owner.registerForActivityResult(
                         new ActivityResultContracts.RequestPermission(),
                         granted -> {
+                            requesting = false;
                             changed.run();
                             AppStore.get(activity.get()).reconcileReminders();
                         });
@@ -37,12 +43,52 @@ final class NotificationAccess {
         if (Build.VERSION.SDK_INT >= 33
                 && ContextCompat.checkSelfPermission(a, Manifest.permission.POST_NOTIFICATIONS)
                         != PackageManager.PERMISSION_GRANTED
-                && !asked
-                && !Boolean.TRUE.equals(store.notificationAsked().getValue())) {
-            asked = true;
+                && (!previouslyAsked(a)
+                        || ActivityCompat.shouldShowRequestPermissionRationale(
+                                a, Manifest.permission.POST_NOTIFICATIONS))) {
+            if (requesting) return;
+            requesting = true;
             store.markNotificationAsked();
             request.launch(Manifest.permission.POST_NOTIFICATIONS);
         } else settings(null);
+    }
+
+    private static boolean previouslyAsked(Context context) {
+        return context.getSharedPreferences("wellness_preferences", Context.MODE_PRIVATE)
+                        .getBoolean("notificationAsked", false)
+                || context.getSharedPreferences("TimersActivity", Context.MODE_PRIVATE)
+                        .getBoolean("notificationAsked", false)
+                || Boolean.TRUE.equals(AppStore.get(context).notificationAsked().getValue());
+    }
+
+    static boolean granted(Context context) {
+        return (Build.VERSION.SDK_INT < 33
+                        || ContextCompat.checkSelfPermission(
+                                        context, Manifest.permission.POST_NOTIFICATIONS)
+                                == PackageManager.PERMISSION_GRANTED)
+                && NotificationManagerCompat.from(context).areNotificationsEnabled();
+    }
+
+    void explainBlocked(String channel) {
+        if (explanation != null && explanation.isShowing()) return;
+        explanation =
+                new MaterialAlertDialogBuilder(activity.get())
+                        .setTitle(R.string.notification_required_title)
+                        .setMessage(R.string.notification_required_message)
+                        .setNegativeButton(R.string.notification_later, null)
+                        .setPositiveButton(
+                                R.string.notification_enable,
+                                (dialog, which) -> {
+                                    if (granted(activity.get())) settings(channel);
+                                    else requestOrSettings();
+                                })
+                        .create();
+        explanation.setOnDismissListener(dialog -> explanation = null);
+        explanation.show();
+    }
+
+    void dismiss() {
+        if (explanation != null) explanation.dismiss();
     }
 
     void settings(String channel) {

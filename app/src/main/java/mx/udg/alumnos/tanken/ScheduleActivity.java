@@ -128,23 +128,26 @@ public class ScheduleActivity extends AppCompatActivity {
                     public void afterTextChanged(android.text.Editable e) {}
                 });
         String[] labels = getResources().getStringArray(R.array.schedule_days);
-        for (int i = 0; i < form.days.getChildCount(); i++) {
-            View button = form.days.getChildAt(i);
-            button.setContentDescription(labels[i]);
+        com.google.android.material.button.MaterialButton[] dayButtons = {
+            form.dayMon, form.dayTue, form.dayWed, form.dayThu, form.dayFri, form.daySat
+        };
+        for (int i = 0; i < dayButtons.length; i++) {
+            com.google.android.material.button.MaterialButton button = dayButtons[i];
+            int day = i;
             // The ViewModel owns the draft, including after rotation.
             button.setSaveEnabled(false);
+            button.setCheckable(true);
+            button.setChecked((model.days() & (1 << i)) != 0);
+            ProductUi.selectedDay(button, labels[i], button.isChecked());
+            button.addOnCheckedChangeListener(
+                    (view, checked) -> {
+                        model.selectedDay(day + 1, checked);
+                        ProductUi.selectedDay(view, labels[day], checked);
+                        form.dayHint.setVisibility(View.GONE);
+                    });
         }
         form.days.setSaveEnabled(false);
-        for (int i = 0; i < form.days.getChildCount(); i++)
-            if ((model.days() & (1 << i)) != 0) form.days.check(form.days.getChildAt(i).getId());
         form.dayHint.setVisibility((model.days() & ~63) != 0 ? View.VISIBLE : View.GONE);
-        form.days.addOnButtonCheckedListener(
-                (group, checkedId, checked) -> {
-                    for (int i = 0; i < group.getChildCount(); i++)
-                        if (group.getChildAt(i).getId() == checkedId)
-                            model.selectedDay(i + 1, checked);
-                    form.dayHint.setVisibility(View.GONE);
-                });
         updateTimes();
         form.start.setOnClickListener(v -> pick(true));
         form.end.setOnClickListener(v -> pick(false));

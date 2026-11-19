@@ -6,7 +6,7 @@
     <string name="wellness_inactivity_option">Escenario de inactividad simulada: incluir pausas</string>
     <string name="wellness_start">Comparar recordatorios</string>
     <string name="wellness_cancel">Cancelar procesamiento</string>
-    <string name="wellness_ready">Listo para comparar con tu horario.</string>
+    <string name="wellness_ready">Listo para comparar. Primero guarda tus clases en Horario; sin clases en las próximas 8 horas, ambos modos darán el mismo resultado.</string>
     <string name="wellness_running">Procesando… %1$d de 3 etapas completadas.</string>
     <string name="wellness_completed">Comparación lista. Tiempo de procesamiento: %1$d ms.</string>
     <string name="wellness_cancelled">Procesamiento cancelado. Puedes iniciar otra comparación.</string>

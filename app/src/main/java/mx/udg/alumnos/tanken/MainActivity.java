@@ -18,6 +18,9 @@ public final class MainActivity extends AppCompatActivity {
     private NavController navigation;
     private AppBarConfiguration appBar;
     private boolean welcomeLaunched;
+    private boolean notificationExplained;
+    private final NotificationAccess notifications =
+            new NotificationAccess(this, () -> this, () -> {});
 
     public static Intent destination(Context context, String tab) {
         return new Intent(context, MainActivity.class)
@@ -63,9 +66,21 @@ public final class MainActivity extends AppCompatActivity {
                 });
         if (saved == null) route(getIntent());
         welcomeLaunched = saved != null && saved.getBoolean("welcomeLaunched", false);
+        notificationExplained = saved != null && saved.getBoolean("notificationExplained", false);
         if (!OnboardingState.completed(this) && !welcomeLaunched) {
             welcomeLaunched = true;
             startActivity(new Intent(this, OnboardingActivity.class));
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (OnboardingState.completed(this)
+                && !notificationExplained
+                && !NotificationAccess.granted(this)) {
+            notificationExplained = true;
+            notifications.explainBlocked(ReminderNotifications.CHANNEL);
         }
     }
 
@@ -125,11 +140,13 @@ public final class MainActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle saved) {
         saved.putBoolean("welcomeLaunched", welcomeLaunched);
+        saved.putBoolean("notificationExplained", notificationExplained);
         super.onSaveInstanceState(saved);
     }
 
     @Override
     protected void onDestroy() {
+        notifications.dismiss();
         b = null;
         super.onDestroy();
     }

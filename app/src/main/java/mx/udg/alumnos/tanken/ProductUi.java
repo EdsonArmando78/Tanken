@@ -12,6 +12,29 @@ import java.util.Locale;
 final class ProductUi {
     private ProductUi() {}
 
+    static void selectedDay(
+            com.google.android.material.button.MaterialButton button,
+            String label,
+            boolean checked) {
+        button.setIcon(null);
+        button.setStrokeWidth(0);
+        button.setShapeAppearanceModel(
+                button.getShapeAppearanceModel().toBuilder()
+                        .setAllCornerSizes(
+                                new com.google.android.material.shape.RelativeCornerSize(
+                                        checked ? 0.5f : 0.2f))
+                        .build());
+        button.setBackgroundTintList(
+                androidx.appcompat.content.res.AppCompatResources.getColorStateList(
+                        button.getContext(), R.color.day_background));
+        button.setTextColor(
+                androidx.appcompat.content.res.AppCompatResources.getColorStateList(
+                        button.getContext(), R.color.day_foreground));
+        button.setContentDescription(
+                button.getContext().getString(
+                        checked ? R.string.day_selected : R.string.day_unselected, label));
+    }
+
     static void insets(View root) {
         int left = root.getPaddingLeft(),
                 top = root.getPaddingTop(),

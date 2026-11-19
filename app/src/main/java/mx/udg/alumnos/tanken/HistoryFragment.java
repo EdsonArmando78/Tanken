@@ -3,6 +3,7 @@ package mx.udg.alumnos.tanken;
 import android.os.Bundle;
 import android.view.*;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
 import androidx.core.util.Pair;
 import androidx.core.view.MenuHost;
@@ -91,7 +92,32 @@ public final class HistoryFragment extends Fragment {
                 .observe(
                         getViewLifecycleOwner(), busy -> requireActivity().invalidateOptionsMenu());
         String[] types = getResources().getStringArray(R.array.history_types);
-        b.type.setSimpleItems(types);
+        // A selected label must not filter the dropdown down to that single label.
+        b.type.setAdapter(
+                new ArrayAdapter<String>(
+                        requireContext(), android.R.layout.simple_dropdown_item_1line, types) {
+                    private final android.widget.Filter allTypes =
+                            new android.widget.Filter() {
+                                @Override
+                                protected FilterResults performFiltering(CharSequence constraint) {
+                                    FilterResults result = new FilterResults();
+                                    result.values = types;
+                                    result.count = types.length;
+                                    return result;
+                                }
+
+                                @Override
+                                protected void publishResults(
+                                        CharSequence constraint, FilterResults results) {
+                                    notifyDataSetChanged();
+                                }
+                            };
+
+                    @Override
+                    public android.widget.Filter getFilter() {
+                        return allTypes;
+                    }
+                });
         for (int i = 0; i < CATEGORIES.length; i++)
             if (CATEGORIES[i].equals(model.filter().getString("category")))
                 b.type.setText(types[i], false);
